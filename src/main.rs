@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::CardComponent, game::{Card, Skin}};
+use crate::{components::{CardComponent, DepotComponent}, game::{Card, Skin}};
 
 mod game;
 mod components;
@@ -50,21 +50,31 @@ fn App() -> Element {
 
 #[component]
 pub fn Hero() -> Element {
-    let suits = ["♦︎", "♣", "♥", "♠"];
-    let colors = ["#d60", "#050", "#f00", "#00c",];
+    let skin = Skin { 
+        ranks: game::RankSkin::Numbers, 
+        suits: game::SuitSkin::Animals, 
+        colors: game::ColorSkin::FourColor,
+    };
+
+    let mut test_depot = vec![];
+    for i in 1..=6 {
+        test_depot.push(Card { rank: i, suit: game::Suit::Diamonds });
+    }
+
+    for i in (1..=13).rev() {
+        test_depot.push(Card { rank: i, suit: game::Suit::Spades });
+    }
+
     rsx! {
         div {
             id: "hero",
 
-            CardComponent { 
+            DepotComponent { 
                 position: Vec2::new(30., 10.),
+                offset: Vec2::new(0., 6.5),
                 width: 12.,
-                card: Card { rank: 1, suit: game::Suit::Spades },
-                skin: Skin { 
-                    ranks: game::RankSkin::Numbers, 
-                    suits: game::SuitSkin::Animals, 
-                    colors: game::ColorSkin::FourColor,
-                }
+                cards: test_depot,
+                skin,
             }
             
             // div {

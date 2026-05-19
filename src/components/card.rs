@@ -3,14 +3,16 @@ use glam::Vec2;
 
 use crate::components::rem;
 
-pub trait SkinTrait<C>: PartialEq {
+pub trait SkinTrait<C>: PartialEq + Clone {
     fn get_color(&self, card: &C) -> String;
     fn render_rank(&self, card: &C) -> Element;
     fn render_suit(&self, card: &C) -> Element;
 }
 
+pub const CARD_HEIGHT_RATIO: f32 = 13. / 12.;
+
 #[component]
-pub fn CardComponent<C: PartialEq + 'static, S: SkinTrait<C> + 'static>(
+pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
     position: Vec2,
     width: f32,
     card: C,
