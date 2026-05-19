@@ -1,9 +1,13 @@
 [application]
 
+# `build` & `serve` dist path
+platform = "web"
+
 [web.app]
+base_path = "solitaire-penguin"
 
 # HTML title tag content
-title = "solitaire-penguin"
+title = "Penguin Solitaire"
 
 # include `assets` in web platform
 [web.resource]

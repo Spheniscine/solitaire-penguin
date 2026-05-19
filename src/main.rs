@@ -1,14 +1,13 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, DepotComponent}, game::{Card, Skin}};
+use crate::{components::{CARD_HEIGHT_RATIO, DepotComponent}, game::{Card, Skin}};
 
 mod game;
 mod components;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/main.css");
-const HEADER_SVG: Asset = asset!("/assets/header.svg");
 const KATEX_SUITS: Asset = asset!("/assets/KaTeX_Suits.woff2");
 
 fn main() {
@@ -119,45 +118,6 @@ pub fn Hero() -> Element {
                     skin,
                 }
             }
-            
-            // div {
-            //     style: "place-items: center; --tx: -30rem; --ty: 10rem;",
-            //     position: "absolute",
-            //     top: "3rem",
-            //     left: "44rem",
-            //     background_color: "#fff",
-            //     width: "11rem",
-            //     height: "12rem",
-            //     border: "0.25rem solid #000",
-            //     border_radius: "1.5rem",
-            //     display: "grid",
-            //     grid_template_columns: "50% 50%",
-            //     grid_template_rows: "50% 50%",
-            //     font_size: "5rem",
-            //     text_align: "center",
-            //     padding: "0.5rem",
-            //     animation: "0.2s movement",
-            //     color: colors[3],
-
-            //     div {
-            //         font_family: "KaTeX_Main",
-            //         "A"
-            //     },
-            //     div {
-            //         font_family: "KaTeX_Main",
-            //         line_height: "1",
-            //         "{suits[3]}",
-            //     },
-            //     div {
-            //         font_family: "KaTeX_Main",
-            //         line_height: "1",
-            //         "{suits[3]}",
-            //     },
-            //     div {
-            //         font_family: "KaTeX_Main",
-            //         "A"
-            //     },
-            // }
         }
     }
 }

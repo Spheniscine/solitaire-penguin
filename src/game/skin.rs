@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{components::SkinTrait, game::Suit};
+use crate::game::Suit;
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub enum RankSkin {
