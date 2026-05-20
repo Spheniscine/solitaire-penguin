@@ -84,11 +84,11 @@ pub fn Hero() -> Element {
                 position: "absolute",
                 border: "{rem(0.5)} solid #00B163",
                 border_radius: rem(1.),
-                padding: rem(0.75),
+                padding: rem(1.),
                 top: rem(2.),
                 left: rem(2.),
                 font_size: rem(4.),
-                width: rem(23.),
+                width: rem(24.),
                 color: "#fff",
                 text_align: "center",
                 "New Game"
@@ -98,11 +98,11 @@ pub fn Hero() -> Element {
                 position: "absolute",
                 border: "{rem(0.5)} solid #00B163",
                 border_radius: rem(1.),
-                padding: rem(0.75),
-                top: rem(11.),
+                padding: rem(1.),
+                top: rem(11.5),
                 left: rem(2.),
                 font_size: rem(4.),
-                width: rem(23.),
+                width: rem(24.),
                 color: "#fff",
                 text_align: "center",
                 "Test"
@@ -110,7 +110,7 @@ pub fn Hero() -> Element {
 
             div {
                 position: "absolute",
-                top: rem(19.),
+                top: rem(20.),
                 left: 0,
 
                 for i in 0..4 {

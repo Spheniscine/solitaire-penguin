@@ -5,14 +5,14 @@
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="UTF-8" />
-  <link rel="preload" as="script" href="/solitaire-penguin/assets/solitaire-penguin-b6dbda62b940fd5b.js" crossorigin><link rel="preload" as="fetch" type="application/wasm" href="/solitaire-penguin/assets/solitaire-penguin_bg-c9edd4236fd58f47.wasm" crossorigin></head>
+  <link rel="preload" as="script" href="/solitaire-penguin/assets/solitaire-penguin-b6dbda62b940fd5b.js" crossorigin><link rel="preload" as="fetch" type="application/wasm" href="/solitaire-penguin/assets/solitaire-penguin_bg-2381c4dc75e4ba0f.wasm" crossorigin></head>
   <body>
     <div id="main"></div>
   <script>
             // We can't use a module script here because we need to start the script immediately when streaming
             import("/solitaire-penguin/assets/solitaire-penguin-b6dbda62b940fd5b.js").then(
                 ({ default: init }) => {
-                init("/solitaire-penguin/assets/solitaire-penguin_bg-c9edd4236fd58f47.wasm").then((wasm) => {
+                init("/solitaire-penguin/assets/solitaire-penguin_bg-2381c4dc75e4ba0f.wasm").then((wasm) => {
                     if (wasm.__wbindgen_start == undefined) {
                     wasm.main();
                     }
