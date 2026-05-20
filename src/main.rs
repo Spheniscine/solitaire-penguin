@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{CARD_HEIGHT_RATIO, DepotComponent}, game::{Card, Skin}};
+use crate::{components::{CARD_HEIGHT_RATIO, DepotComponent, rem}, game::{Card, Skin}};
 
 mod game;
 mod components;
@@ -80,42 +80,76 @@ pub fn Hero() -> Element {
         div {
             id: "hero",
 
-            for i in 0..4 {
-                DepotComponent { 
-                    position: Vec2::new(
-                        center_x(4, i),
-                        pos_y(0)
-                    ),
-                    offset: Vec2::new(0., 0.),
-                    width: card_width,
-                    cards: test_single.clone(),
-                    skin,
-                }
+            div {
+                position: "absolute",
+                border: "{rem(0.5)} solid #00B163",
+                border_radius: rem(1.),
+                padding: rem(0.75),
+                top: rem(2.),
+                left: rem(2.),
+                font_size: rem(4.),
+                width: rem(23.),
+                color: "#fff",
+                text_align: "center",
+                "New Game"
             }
 
-            for i in 0..7 {
-                DepotComponent { 
-                    position: Vec2::new(
-                        center_x(7, i),
-                        pos_y(1)
-                    ),
-                    offset: Vec2::new(0., 0.),
-                    width: card_width,
-                    cards: test_single.clone(),
-                    skin,
-                }
+            div {
+                position: "absolute",
+                border: "{rem(0.5)} solid #00B163",
+                border_radius: rem(1.),
+                padding: rem(0.75),
+                top: rem(11.),
+                left: rem(2.),
+                font_size: rem(4.),
+                width: rem(23.),
+                color: "#fff",
+                text_align: "center",
+                "Test"
             }
 
-            for i in 0..7 {
-                DepotComponent { 
-                    position: Vec2::new(
-                        center_x(7, i),
-                        pos_y(2)
-                    ),
-                    offset: Vec2::new(0., 6.),
-                    width: card_width,
-                    cards: test_depot.clone(),
-                    skin,
+            div {
+                position: "absolute",
+                top: rem(19.),
+                left: 0,
+
+                for i in 0..4 {
+                    DepotComponent { 
+                        position: Vec2::new(
+                            center_x(4, i),
+                            pos_y(0)
+                        ),
+                        offset: Vec2::new(0., 0.),
+                        width: card_width,
+                        cards: test_single.clone(),
+                        skin,
+                    }
+                }
+
+                for i in 0..7 {
+                    DepotComponent { 
+                        position: Vec2::new(
+                            center_x(7, i),
+                            pos_y(1)
+                        ),
+                        offset: Vec2::new(0., 0.),
+                        width: card_width,
+                        cards: test_single.clone(),
+                        skin,
+                    }
+                }
+
+                for i in 0..7 {
+                    DepotComponent { 
+                        position: Vec2::new(
+                            center_x(7, i),
+                            pos_y(2)
+                        ),
+                        offset: Vec2::new(0., 6.5),
+                        width: card_width,
+                        cards: test_depot.clone(),
+                        skin,
+                    }
                 }
             }
         }
