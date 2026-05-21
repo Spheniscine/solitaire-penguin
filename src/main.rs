@@ -134,7 +134,7 @@ pub fn Hero() -> Element {
                         ),
                         offset: Vec2::new(0., 0.),
                         width: card_width,
-                        cards: test_single.clone(),
+                        cards: vec![],
                         skin,
                     }
                 }

@@ -48,3 +48,29 @@ pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
         }
     }
 }
+
+#[component]
+pub fn CardFrame(
+    position: Vec2,
+    width: f32,
+) -> Element {
+    let pt = width / 12.;
+    let pt = |x: f32| {
+        rem(x * pt)
+    };
+    rsx! {
+        div {
+            style: "place-items: center;",
+            position: "absolute",
+            top: rem(position.y),
+            left: rem(position.x),
+            width: pt(10.5),
+            height: pt(11.5),
+            border: "{pt(0.5)} solid #aaa",
+            border_radius: pt(1.5),
+            font_size: pt(5.),
+            text_align: "center",
+            padding: pt(0.5),
+        }
+    }
+}
