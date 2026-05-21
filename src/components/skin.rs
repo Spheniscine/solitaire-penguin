@@ -19,7 +19,7 @@ impl SkinTrait<Card> for Skin {
 
     fn render_suit(&self, card: &Card) -> Element {
         rsx! {
-            div {
+            span {
                 font_family: self.suits.font(),
                 position: if self.suits == SuitSkin::Shapes {"relative"},
                 top: if self.suits == SuitSkin::Shapes {"0.1em"},
