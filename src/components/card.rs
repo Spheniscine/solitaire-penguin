@@ -41,10 +41,10 @@ pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
             padding: pt(0.5),
             color: skin.get_color(&card),
 
-            div {{skin.render_rank(&card)}},
-            div {{skin.render_suit(&card)}},
-            div {{skin.render_suit(&card)}},
-            div {{skin.render_rank(&card)}},
+            div { display: "flex", align_items: "center", {skin.render_rank(&card)}},
+            div { display: "flex", align_items: "center", {skin.render_suit(&card)}},
+            div { display: "flex", align_items: "center", {skin.render_suit(&card)}},
+            div { display: "flex", align_items: "center", {skin.render_rank(&card)}},
         }
     }
 }
