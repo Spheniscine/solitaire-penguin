@@ -179,6 +179,12 @@ pub fn Hero() -> Element {
                         width: card_width,
                         cards: vec![],
                         skin,
+                        hint: rsx!{
+                            span {
+                                font_family: "Noto Sans Symbols 2",
+                                "✽"
+                            }
+                        },
                     }
                 }
 
@@ -190,8 +196,14 @@ pub fn Hero() -> Element {
                         ),
                         offset: Vec2::new(0., 6.5),
                         width: card_width,
-                        cards: test_depot.clone(),
+                        cards: if i != 6 {test_depot.clone()} else {vec![]},
                         skin,
+                        hint: rsx!{
+                            span {
+                                font_family: "KaTeX_Main",
+                                "13"
+                            }
+                        },
                     }
                 }
             }

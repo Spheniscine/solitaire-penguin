@@ -53,6 +53,8 @@ pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
 pub fn CardFrame(
     position: Vec2,
     width: f32,
+    hint: Option<Element>,
+    #[props(default = "#aaa".to_string())] color: String,
 ) -> Element {
     let pt = width / 12.;
     let pt = |x: f32| {
@@ -60,18 +62,27 @@ pub fn CardFrame(
     };
     rsx! {
         div {
-            style: "place-items: center;",
+            display: "flex",
+            align_items: "center",
+            justify_content: "center",
             position: "absolute",
             top: rem(position.y),
             left: rem(position.x),
             margin: pt(0.25), // frame must be slightly smaller than card to prevent peeking out in some platforms
             width: pt(10.),
             height: pt(11.),
-            border: "{pt(0.5)} solid #aaa",
+            border: "{pt(0.5)} solid {color}",
+            text_align: "center",
+            color,
             border_radius: pt(1.5),
             font_size: pt(5.),
-            text_align: "center",
             padding: pt(0.5),
+
+            if let Some(hint) = hint {
+                div {
+                    {hint},
+                }
+            }
         }
     }
 }

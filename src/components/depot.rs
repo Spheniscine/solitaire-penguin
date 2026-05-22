@@ -10,12 +10,14 @@ pub fn DepotComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>
     width: f32,
     cards: Vec<C>,
     skin: S,
+    hint: Option<Element>,
 ) -> Element {
     let pos = |i: usize| position + offset * i as f32;
     rsx! {
         CardFrame {
             position,
             width,
+            hint,
         }
         for i in 0..cards.len() {
             CardComponent { 
