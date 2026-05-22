@@ -64,8 +64,9 @@ pub fn CardFrame(
             position: "absolute",
             top: rem(position.y),
             left: rem(position.x),
-            width: pt(10.5),
-            height: pt(11.5),
+            margin: pt(0.25), // frame must be slightly smaller than card to prevent peeking out in some platforms
+            width: pt(10.),
+            height: pt(11.),
             border: "{pt(0.5)} solid #aaa",
             border_radius: pt(1.5),
             font_size: pt(5.),

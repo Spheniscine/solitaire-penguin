@@ -79,6 +79,7 @@ pub fn Hero() -> Element {
     rsx! {
         div {
             id: "hero",
+            class: "select-none",
 
             div {
                 position: "absolute",
@@ -99,13 +100,55 @@ pub fn Hero() -> Element {
                 border: "{rem(0.5)} solid #00B163",
                 border_radius: rem(1.),
                 padding: rem(1.),
-                top: rem(11.5),
-                left: rem(2.),
+                top: rem(2.),
+                right: rem(2.),
                 font_size: rem(4.),
                 width: rem(24.),
                 color: "#fff",
                 text_align: "center",
-                "Test"
+                "Settings"
+            }
+
+            div {
+                position: "absolute",
+                border: "{rem(0.5)} solid #00B163",
+                border_radius: rem(1.),
+                padding: rem(1.),
+                top: rem(2.),
+                right: rem(30.),
+                font_size: rem(4.),
+                width: rem(24.),
+                color: "#fff",
+                text_align: "center",
+                "Restart"
+            }
+
+            div {
+                position: "absolute",
+                border: "{rem(0.5)} solid #00B163",
+                border_radius: rem(1.),
+                padding: rem(1.),
+                top: rem(11.),
+                right: rem(2.),
+                font_size: rem(4.),
+                width: rem(24.),
+                color: "#fff",
+                text_align: "center",
+                "Help"
+            }
+
+            div {
+                position: "absolute",
+                border: "{rem(0.5)} solid #00B163",
+                border_radius: rem(1.),
+                padding: rem(1.),
+                top: rem(11.),
+                right: rem(30.),
+                font_size: rem(4.),
+                width: rem(24.),
+                color: "#fff",
+                text_align: "center",
+                "Undo"
             }
 
             div {
