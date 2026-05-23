@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::components::rem;
+use crate::{components::rem, game::ANIMATION_DURATION};
 
 pub trait SkinTrait<C>: PartialEq + Clone {
     fn get_color(&self, card: &C) -> String;
@@ -27,7 +27,7 @@ pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
 
     let animation = if let Some(animate_from) = animate_from {
         let diff = animate_from - position;
-        format!("--translateX: {}; --translateY: {}; animation: 0.2s movement;", rem(diff.x), rem(diff.y))
+        format!("--translateX: {}; --translateY: {}; animation: {}s movement;", rem(diff.x), rem(diff.y), ANIMATION_DURATION.as_secs_f32())
     } else {
         String::new()
     };

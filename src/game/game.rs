@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use rand::{Rng, seq::SliceRandom};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
@@ -13,6 +15,8 @@ pub const NUM_DEPOTS: usize = NUM_FOUNDATIONS + NUM_FREECELLS + NUM_TABLEAU_DEPO
 pub const FOUNDATION_OFFSET: usize = 0;
 pub const FREECELL_OFFSET: usize = NUM_FOUNDATIONS;
 pub const TABLEAU_OFFSET: usize = FREECELL_OFFSET + NUM_FREECELLS;
+
+pub const ANIMATION_DURATION: Duration = Duration::from_millis(200);
 
 #[derive(Copy, Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub enum DepotRole {
@@ -171,6 +175,10 @@ impl GameState {
     }
 
     pub fn is_busy(&self) -> bool {
+        self.is_acting()
+    }
+
+    pub fn is_acting(&self) -> bool {
         !self.board.actions.is_empty()
     }
 
