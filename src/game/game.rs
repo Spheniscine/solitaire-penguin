@@ -6,17 +6,17 @@ use crate::game::{Card, DECK_SIZE, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, Suit};
 
 pub const NUM_FOUNDATIONS: usize = NUM_SUITS;
 pub const NUM_FREECELLS: usize = 7;
-pub const NUM_COLUMNS: usize = 7;
+pub const NUM_TABLEAU_DEPOTS: usize = 7;
 
-pub const NUM_DEPOTS: usize = NUM_FOUNDATIONS + NUM_FREECELLS + NUM_COLUMNS;
+pub const NUM_DEPOTS: usize = NUM_FOUNDATIONS + NUM_FREECELLS + NUM_TABLEAU_DEPOTS;
 
 pub const FOUNDATION_OFFSET: usize = 0;
 pub const FREECELL_OFFSET: usize = NUM_FOUNDATIONS;
-pub const COLUMN_OFFSET: usize = FREECELL_OFFSET + NUM_FREECELLS;
+pub const TABLEAU_OFFSET: usize = FREECELL_OFFSET + NUM_FREECELLS;
 
 #[derive(Copy, Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub enum DepotRole {
-    Foundation, FreeCell, Column
+    Foundation, FreeCell, Tableau
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
@@ -28,7 +28,7 @@ impl DepotIndex {
         } else if self.0 < FREECELL_OFFSET + NUM_FREECELLS {
             (DepotRole::FreeCell, self.0 - FREECELL_OFFSET)
         } else {
-            (DepotRole::Column, self.0 - COLUMN_OFFSET)
+            (DepotRole::Tableau, self.0 - TABLEAU_OFFSET)
         }
     }
 
@@ -44,36 +44,36 @@ pub struct BoardPos {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub enum Action {
+    Move(Vec<Card>, BoardPos, BoardPos),
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct Board {
     pub depots: Vec<Vec<Card>>,
     pub beak: Card,
     pub selected: Option<BoardPos>,
+    pub actions: Vec<Action>,
 }
 
 impl Board {
-    pub fn from_deal(mut deal: Vec<Card>, random_beak: bool) -> Self {
+    pub fn from_deal(deal: &Vec<Card>) -> Self {
         assert_eq!(deal.len(), DECK_SIZE);
         let mut depots = vec![vec![]; NUM_DEPOTS];
-        let mut column_ite = std::iter::repeat(0..NUM_COLUMNS).flatten();
+        let mut column_ite = std::iter::repeat(0..NUM_TABLEAU_DEPOTS).flatten();
         let mut foundation_ite = 0..NUM_FOUNDATIONS;
 
-        if !random_beak {
-            let beak = Card { rank: 1, suit: Suit::Spades };
-            let i = deal.iter().position(|&card| card == beak).expect("1S not found in deck, should be full deck");
-            deal.swap(0, i);
-        }
-
         let beak = deal[0];
-        for &card in &deal {
+        for &card in deal {
             if card != beak && card.rank == beak.rank {
                 depots[foundation_ite.next().unwrap() + FOUNDATION_OFFSET].push(card);
             } else {
-                depots[column_ite.next().unwrap() + COLUMN_OFFSET].push(card);
+                depots[column_ite.next().unwrap() + TABLEAU_OFFSET].push(card);
             }
         }
 
         Board {
-            depots, beak, selected: None,
+            depots, beak, selected: None, actions: vec![],
         }
     }
 
@@ -83,6 +83,24 @@ impl Board {
 
     pub fn column_head_rank(&self) -> u8 {
         if self.foundation_rank() == RANK_MIN { RANK_MAX } else {self.foundation_rank() - 1}
+    }
+
+    pub fn do_move(&mut self, pos1: BoardPos, pos2: BoardPos) {
+        self.selected = None;
+        let cards = self.depots[pos1.depot_index].drain(pos1.card_index ..).collect();
+        self.actions.push(
+            Action::Move(cards, pos1, pos2)
+        );
+    }
+
+    pub fn finalize_actions(&mut self) {
+        for act in self.actions.drain(..) {
+            match act {
+                Action::Move(cards, pos1, pos2) => {
+                    self.depots[pos2.depot_index].extend(cards);
+                },
+            }
+        }
     }
 }
 
@@ -107,27 +125,74 @@ impl GameState {
         deck
     }
     pub fn init() -> Self {
-        let deal = Self::new_deal(&mut rand::rng());
+        let mut deal = Self::new_deal(&mut rand::rng());
         let random_beak = false;
 
+        if !random_beak {
+            let beak = Card { rank: 1, suit: Suit::Spades };
+            let i = deal.iter().position(|&card| card == beak).expect("1S not found in deck, should be full deck");
+            deal.swap(0, i);
+        }
+
         Self {
-            board: Board::from_deal(deal.clone(), random_beak),
+            board: Board::from_deal(&deal),
             deal,
             num_wins: 0,
             random_beak,
         }
     }
 
-    pub fn onclick(&mut self, pos: BoardPos) {
+    pub fn can_select(&mut self, pos: BoardPos) -> bool {
         let depot = pos.depot_index;
         let ord = pos.card_index;
 
-        if let Some(s) = self.board.selected {
-            if pos == s { self.board.selected = None; }
+        // todo: rules
+        ord < self.board.depots[depot].len()
+    }
+
+    pub fn can_move(&mut self, pos1: BoardPos, pos2: BoardPos) -> bool {
+        let max_tableau_test: usize = 18;
+
+        if pos1.depot_index == pos2.depot_index { return false; }
+        let num_moved = self.board.depots[pos1.depot_index].len() - pos1.card_index;
+        if pos2.card_index != self.board.depots[pos2.depot_index].len() { return false; }
+        // todo: rules
+        match DepotIndex(pos2.depot_index).role() {
+            DepotRole::Foundation => {
+                num_moved == 1
+            },
+            DepotRole::FreeCell => {
+                num_moved == 1
+            },
+            DepotRole::Tableau => {
+                num_moved + self.board.depots[pos2.depot_index].len() <= max_tableau_test
+            },
+        }
+    }
+
+    pub fn is_busy(&self) -> bool {
+        !self.board.actions.is_empty()
+    }
+
+    pub fn onclick(&mut self, pos: BoardPos) {
+        if self.is_busy() { return; }
+        let depot = pos.depot_index;
+        let ord = pos.card_index;
+
+        if let Some(src) = self.board.selected {
+            if pos == src { self.board.selected = None; }
+
+            let dest = BoardPos { depot_index: pos.depot_index, card_index: pos.card_index.wrapping_add(1) };
+            if !self.can_move(src, dest) { return; }
+            self.board.do_move(src, dest);
         } else {
             if ord < self.board.depots[depot].len() {
                 self.board.selected = Some(pos);
             }
         }
+    }
+
+    pub fn finalize_actions(&mut self) {
+        self.board.finalize_actions();
     }
 }

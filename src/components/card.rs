@@ -18,29 +18,26 @@ pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
     card: C,
     skin: S,
     onclick: EventHandler<MouseEvent>,
+    animate_from: Option<Vec2>,
 ) -> Element {
     let pt = width / 12.;
     let pt = |x: f32| {
         rem(x * pt)
     };
+
+    let animation = if let Some(animate_from) = animate_from {
+        let diff = animate_from - position;
+        format!("--translateX: {}; --translateY: {}; animation: 0.2s movement;", rem(diff.x), rem(diff.y))
+    } else {
+        String::new()
+    };
+
     rsx! {
         div {
-            style: "place-items: center;",
-            position: "absolute",
-            top: rem(position.y),
-            left: rem(position.x),
-            background_color: "#fff",
-            width: pt(11.),
-            height: pt(12.),
-            border: "{pt(0.25)} solid #000",
-            border_radius: pt(1.5),
-            display: "grid",
-            grid_template_columns: "50% 50%",
-            grid_template_rows: "50% 50%",
-            font_size: pt(5.),
-            text_align: "center",
-            padding: pt(0.5),
-            color: skin.get_color(&card),
+            style: "{animation} place-items: center; position: absolute; top: {rem(position.y)}; left: {rem(position.x)};
+            background-color: #fff; width: {pt(11.)}; height: {pt(12.)}; border: {pt(0.25)} solid #000;
+            border-radius: {pt(1.5)}; display: grid; grid-template-columns: 50% 50%; grid-template-rows: 50% 50%;
+            font-size: {pt(5.)}; text-align: center; padding: {pt(0.5)}; color: {skin.get_color(&card)};",
             onclick,
 
             div { display: "flex", align_items: "center", {skin.render_rank(&card)}},

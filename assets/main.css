@@ -79,7 +79,7 @@ body {
 
 @keyframes movement {
     0% {
-        transform: translate(var(--tx), var(--ty));
+        transform: translate(var(--translateX), var(--translateY));
     }
     100% {
         transform: translate(0, 0);

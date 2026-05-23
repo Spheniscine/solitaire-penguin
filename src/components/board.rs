@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, CardFrame, SkinTrait, rem}, game::{Board, BoardPos, Card, DepotIndex, DepotRole, NUM_COLUMNS, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, Skin, Suit}};
+use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, CardFrame, SkinTrait, rem}, game::{Action, Board, BoardPos, Card, DepotIndex, DepotRole, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, NUM_TABLEAU_DEPOTS, Skin, Suit}};
 
 
 #[component]
@@ -30,8 +30,8 @@ pub fn BoardComponent(
                 Vec2::new(center_x(NUM_FOUNDATIONS, index), pos_y(0)),
             DepotRole::FreeCell => 
                 Vec2::new(center_x(NUM_FREECELLS, index), pos_y(1)),
-            DepotRole::Column => {
-                Vec2::new(center_x(NUM_COLUMNS, index), pos_y(2)) + column_card_offset * ord as f32
+            DepotRole::Tableau => {
+                Vec2::new(center_x(NUM_TABLEAU_DEPOTS, index), pos_y(2)) + column_card_offset * ord as f32
             },
         }
     };
@@ -49,14 +49,14 @@ pub fn BoardComponent(
                     "✽"
                 }
             },
-            DepotRole::Column => {
+            DepotRole::Tableau => {
                 skin.render_rank(&Card { rank: board.column_head_rank(), suit: Suit::Spades })
             },
         }
     };
 
     let selected_height = if let Some(BoardPos { depot_index, card_index }) = board.selected {
-        let d = if DepotIndex(depot_index).role() == DepotRole::Column {
+        let d = if DepotIndex(depot_index).role() == DepotRole::Tableau {
             board.depots[depot_index].len() - card_index - 1
         } else {
             0
@@ -64,6 +64,31 @@ pub fn BoardComponent(
 
         card_height + column_card_offset.y * d as f32
     } else {0.};
+
+    let anim_iter = board.actions.iter().flat_map(|act| {
+        match act {
+            Action::Move(cards, pos1, pos2) => {
+                let mut pos1 = *pos1;
+                let mut pos2 = *pos2;
+                cards.iter().map(move |card| {
+                    let res = rsx! {
+                        CardComponent {
+                            position: get_pos(pos2.depot_index, pos2.card_index),
+                            animate_from: get_pos(pos1.depot_index, pos1.card_index),
+                            width: card_width,
+                            card: *card,
+                            skin,
+                            onclick: move |_| {},
+                        }
+                    };
+                    pos1.card_index += 1;
+                    pos2.card_index += 1;
+                    res
+                })
+            },
+        }
+    });
+    
 
     rsx! {
         div {
@@ -105,6 +130,10 @@ pub fn BoardComponent(
                         },
                     }
                 }
+            }
+
+            for anim in anim_iter {
+                {anim},
             }
         }
     }
