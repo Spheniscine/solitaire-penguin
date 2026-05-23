@@ -42,7 +42,9 @@ pub fn BoardComponent(
             },
             DepotRole::FreeCell => rsx!{
                 span {
-                    font_family: "Noto Sans Symbols 2",
+                    font_family: "'Noto Sans Symbols 2'",
+                    position: "relative",
+                    top: "0.12em",
                     "✽"
                 }
             },
@@ -55,8 +57,8 @@ pub fn BoardComponent(
     rsx! {
         div {
             position: "absolute",
-            top: rem(position.x),
-            left: rem(position.y),
+            top: rem(position.y),
+            left: rem(position.x),
 
             for depot in 0..NUM_DEPOTS {
                 CardFrame { 

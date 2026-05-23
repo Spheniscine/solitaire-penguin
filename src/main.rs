@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{CARD_HEIGHT_RATIO, DepotComponent, rem}, game::{Card, Skin}};
+use crate::{components::{BoardComponent, rem}, game::{GameState, Skin}};
 
 mod game;
 mod components;
@@ -49,12 +49,6 @@ fn App() -> Element {
 
 #[component]
 pub fn Hero() -> Element {
-    let card_width = 12f32;
-    let card_height = card_width * CARD_HEIGHT_RATIO;
-    let spacer = 2f32;
-
-    let center_x = |n: usize, i: usize| 
-        50. - (card_width * n as f32 + spacer * (n-1) as f32) / 2. + (card_width + spacer) * i as f32;
 
     let skin = Skin { 
         ranks: game::RankSkin::Numbers, 
@@ -62,19 +56,7 @@ pub fn Hero() -> Element {
         colors: game::ColorSkin::FourColor,
     };
 
-    let test_single = vec![Card { rank: 10, suit: game::Suit::Clubs }];
-
-    let mut test_depot = vec![];
-    for i in 1..=6 {
-        test_depot.push(Card { rank: i, suit: game::Suit::Spades });
-    }
-
-    for i in (2..=13).rev() {
-        test_depot.push(Card { rank: i, suit: game::Suit::Diamonds });
-    }
-
-    let start_y = 2f32;
-    let pos_y = |i: usize| start_y + (card_height + spacer) * i as f32;
+    let board = GameState::init().board;
 
     rsx! {
         div {
@@ -151,61 +133,10 @@ pub fn Hero() -> Element {
                 "Undo"
             }
 
-            div {
-                position: "absolute",
-                top: rem(20.),
-                left: 0,
-
-                for i in 0..4 {
-                    DepotComponent { 
-                        position: Vec2::new(
-                            center_x(4, i),
-                            pos_y(0)
-                        ),
-                        offset: Vec2::new(0., 0.),
-                        width: card_width,
-                        cards: test_single.clone(),
-                        skin,
-                    }
-                }
-
-                for i in 0..7 {
-                    DepotComponent { 
-                        position: Vec2::new(
-                            center_x(7, i),
-                            pos_y(1)
-                        ),
-                        offset: Vec2::new(0., 0.),
-                        width: card_width,
-                        cards: vec![],
-                        skin,
-                        hint: rsx!{
-                            span {
-                                font_family: "Noto Sans Symbols 2",
-                                "✽"
-                            }
-                        },
-                    }
-                }
-
-                for i in 0..7 {
-                    DepotComponent { 
-                        position: Vec2::new(
-                            center_x(7, i),
-                            pos_y(2)
-                        ),
-                        offset: Vec2::new(0., 6.5),
-                        width: card_width,
-                        cards: if i != 6 {test_depot.clone()} else {vec![]},
-                        skin,
-                        hint: rsx!{
-                            span {
-                                font_family: "KaTeX_Main",
-                                "13"
-                            }
-                        },
-                    }
-                }
+            BoardComponent { 
+                position: Vec2 { x: 0., y: 20. },
+                board,
+                skin,
             }
         }
     }

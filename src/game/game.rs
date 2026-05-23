@@ -1,4 +1,4 @@
-use rand::{Rng, rngs::ThreadRng, seq::SliceRandom};
+use rand::{Rng, seq::SliceRandom};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
