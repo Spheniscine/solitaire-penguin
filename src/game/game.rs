@@ -2,7 +2,7 @@ use rand::{Rng, rngs::ThreadRng, seq::SliceRandom};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
-use crate::game::{Card, DECK_SIZE, NUM_SUITS, RANKS, Suit};
+use crate::game::{Card, DECK_SIZE, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, Suit};
 
 pub const NUM_FOUNDATIONS: usize = NUM_SUITS;
 pub const NUM_FREECELLS: usize = 7;
@@ -31,11 +31,16 @@ impl DepotIndex {
             (DepotRole::Column, self.0 - COLUMN_OFFSET)
         }
     }
+
+    pub fn role(&self) -> DepotRole {
+        self.role_and_subindex().0
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct Board {
     pub depots: Vec<Vec<Card>>,
+    pub beak: Card,
 }
 
 impl Board {
@@ -61,8 +66,16 @@ impl Board {
         }
 
         Board {
-            depots,
+            depots, beak,
         }
+    }
+
+    pub fn foundation_rank(&self) -> u8 {
+        self.beak.rank
+    }
+
+    pub fn column_head_rank(&self) -> u8 {
+        if self.foundation_rank() == RANK_MIN { RANK_MAX } else {self.foundation_rank() - 1}
     }
 }
 

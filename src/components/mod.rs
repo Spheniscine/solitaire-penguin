@@ -9,3 +9,6 @@ mod skin;
 
 mod depot;
 pub use depot::*;
+
+mod board;
+pub use board::*;
