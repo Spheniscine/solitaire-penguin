@@ -71,7 +71,7 @@ impl SuitSkin {
     }
 }
 
-const COLOR_AMBER: &str = "#d60";
+const COLOR_AMBER: &str = "#b70";
 const COLOR_GREEN: &str = "#050";
 const COLOR_RED: &str = "#f00";
 const COLOR_BLUE: &str = "#00c";
