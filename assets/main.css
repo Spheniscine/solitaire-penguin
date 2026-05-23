@@ -85,3 +85,7 @@ body {
         transform: translate(0, 0);
     }
 }
+
+.selected-halo {
+    box-shadow: 0 0 1rem 1rem #ff0;
+}

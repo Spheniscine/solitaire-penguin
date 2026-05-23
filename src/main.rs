@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{BoardComponent, rem}, game::{GameState, Skin}};
+use crate::{components::{BoardComponent, rem}, game::{BoardPos, GameState, Skin}};
 
 mod game;
 mod components;
@@ -56,7 +56,8 @@ pub fn Hero() -> Element {
         colors: game::ColorSkin::FourColor,
     };
 
-    let board = GameState::init().board;
+    let mut board = GameState::init().board;
+    board.selected = Some(BoardPos { depot_index: crate::game::COLUMN_OFFSET, card_index: 5 });
 
     rsx! {
         div {

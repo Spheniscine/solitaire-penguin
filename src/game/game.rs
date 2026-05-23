@@ -38,9 +38,16 @@ impl DepotIndex {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct BoardPos {
+    pub depot_index: usize,
+    pub card_index: usize,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct Board {
     pub depots: Vec<Vec<Card>>,
     pub beak: Card,
+    pub selected: Option<BoardPos>,
 }
 
 impl Board {
@@ -66,7 +73,7 @@ impl Board {
         }
 
         Board {
-            depots, beak,
+            depots, beak, selected: None,
         }
     }
 

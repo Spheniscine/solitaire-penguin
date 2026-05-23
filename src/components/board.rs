@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, CardFrame, SkinTrait, rem}, game::{Board, Card, DepotIndex, DepotRole, NUM_COLUMNS, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, Skin, Suit}};
+use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, CardFrame, SkinTrait, rem}, game::{Board, BoardPos, Card, DepotIndex, DepotRole, NUM_COLUMNS, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, Skin, Suit}};
 
 
 #[component]
@@ -54,6 +54,16 @@ pub fn BoardComponent(
         }
     };
 
+    let selected_height = if let Some(BoardPos { depot_index, card_index }) = board.selected {
+        let d = if DepotIndex(depot_index).role() == DepotRole::Column {
+            board.depots[depot_index].len() - card_index - 1
+        } else {
+            0
+        };
+
+        card_height + column_card_offset.y * d as f32
+    } else {0.};
+
     rsx! {
         div {
             position: "absolute",
@@ -68,6 +78,19 @@ pub fn BoardComponent(
                 }
 
                 for i in 0..board.depots[depot].len() {
+                    if board.selected == Some(BoardPos { depot_index: depot, card_index: i }) {
+                        div {
+                            position: "absolute",
+                            top: rem(get_pos(depot, i).y),
+                            left: rem(get_pos(depot, i).x),
+                            width: rem(card_width),
+                            height: rem(selected_height),
+                            background_color: "#ff0",
+                            border_radius: rem(card_width * (1.5 / 12.)),
+                            class: "selected-halo",
+                        }
+                    }
+
                     CardComponent {
                         position: get_pos(depot, i),
                         width: card_width,
