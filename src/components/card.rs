@@ -17,6 +17,7 @@ pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
     width: f32,
     card: C,
     skin: S,
+    onclick: EventHandler<MouseEvent>,
 ) -> Element {
     let pt = width / 12.;
     let pt = |x: f32| {
@@ -40,6 +41,7 @@ pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
             text_align: "center",
             padding: pt(0.5),
             color: skin.get_color(&card),
+            onclick,
 
             div { display: "flex", align_items: "center", {skin.render_rank(&card)}},
             div { display: "flex", align_items: "center", {skin.render_suit(&card)}},
@@ -55,6 +57,7 @@ pub fn CardFrame(
     width: f32,
     hint: Option<Element>,
     #[props(default = "#aaa".to_string())] color: String,
+    onclick: EventHandler<MouseEvent>,
 ) -> Element {
     let pt = width / 12.;
     let pt = |x: f32| {
@@ -77,6 +80,7 @@ pub fn CardFrame(
             border_radius: pt(1.5),
             font_size: pt(5.),
             padding: pt(0.5),
+            onclick,
 
             if let Some(hint) = hint {
                 div {

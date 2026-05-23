@@ -9,6 +9,7 @@ pub fn BoardComponent(
     position: Vec2,
     board: Board,
     skin: Skin,
+    onclick: EventHandler<BoardPos>,
 ) -> Element {
     let card_width = 12f32;
     let card_height = card_width * CARD_HEIGHT_RATIO;
@@ -75,6 +76,9 @@ pub fn BoardComponent(
                     position: get_pos(depot, 0),
                     width: card_width,
                     hint: get_hint(depot),
+                    onclick: move |_| {
+                        onclick.call(BoardPos { depot_index: depot, card_index: !0 })
+                    },
                 }
 
                 for i in 0..board.depots[depot].len() {
@@ -96,6 +100,9 @@ pub fn BoardComponent(
                         width: card_width,
                         card: board.depots[depot][i],
                         skin,
+                        onclick: move |_| {
+                            onclick.call(BoardPos { depot_index: depot, card_index: i })
+                        },
                     }
                 }
             }

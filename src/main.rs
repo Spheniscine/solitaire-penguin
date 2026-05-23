@@ -56,8 +56,9 @@ pub fn Hero() -> Element {
         colors: game::ColorSkin::FourColor,
     };
 
-    let mut board = GameState::init().board;
-    board.selected = Some(BoardPos { depot_index: crate::game::COLUMN_OFFSET, card_index: 5 });
+    let mut state = use_signal(|| {
+        GameState::init()
+    });
 
     rsx! {
         div {
@@ -136,8 +137,9 @@ pub fn Hero() -> Element {
 
             BoardComponent { 
                 position: Vec2 { x: 0., y: 20. },
-                board,
+                board: state.read().board.clone(),
                 skin,
+                onclick: move |pos| {state.write().onclick(pos);},
             }
         }
     }

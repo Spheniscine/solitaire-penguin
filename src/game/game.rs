@@ -37,7 +37,7 @@ impl DepotIndex {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct BoardPos {
     pub depot_index: usize,
     pub card_index: usize,
@@ -115,6 +115,19 @@ impl GameState {
             deal,
             num_wins: 0,
             random_beak,
+        }
+    }
+
+    pub fn onclick(&mut self, pos: BoardPos) {
+        let depot = pos.depot_index;
+        let ord = pos.card_index;
+
+        if let Some(s) = self.board.selected {
+            if pos == s { self.board.selected = None; }
+        } else {
+            if ord < self.board.depots[depot].len() {
+                self.board.selected = Some(pos);
+            }
         }
     }
 }
