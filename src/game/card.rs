@@ -1,6 +1,10 @@
-use serde::{Deserialize, Serialize, de::Visitor};
+use std::ops::RangeInclusive;
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+use serde::{Deserialize, Serialize, de::Visitor};
+use strum::EnumCount;
+use strum_macros::{EnumCount, EnumIter};
+
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, EnumCount, EnumIter)]
 pub enum Suit {
     Clubs, Diamonds, Hearts, Spades
 }
@@ -57,9 +61,14 @@ pub struct Card {
     pub suit: Suit, 
 }
 
+pub const RANK_MIN: u8 = 1;
+pub const RANK_MAX: u8 = 13;
+pub const RANKS: RangeInclusive<u8> = RANK_MIN ..= RANK_MAX;
+pub const NUM_SUITS: usize = Suit::COUNT;
+pub const NUM_RANKS: usize = (RANK_MAX - RANK_MIN) as usize + 1;
+pub const DECK_SIZE: usize = NUM_RANKS * NUM_SUITS;
+
 impl Card {
-    const RANK_MIN: u8 = 1;
-    const RANK_MAX: u8 = 13;
     fn code(self) -> String {
         format!("{}{}", self.rank, self.suit.code())
     }
@@ -67,7 +76,7 @@ impl Card {
         let mut it = code.chars();
         let suit = Suit::from_code(it.next_back()?)?;
         let rank: u8 = it.as_str().parse().ok()?;
-        if !(Self::RANK_MIN ..= Self::RANK_MAX).contains(&rank) { return None; }
+        if !RANKS.contains(&rank) { return None; }
         Some(Card { rank, suit })
     }
 }
