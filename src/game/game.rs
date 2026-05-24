@@ -2,6 +2,7 @@ use std::time::Duration;
 
 use rand::{Rng, seq::SliceRandom};
 use serde::{Deserialize, Serialize};
+use serde_tuple::{Deserialize_tuple, Serialize_tuple};
 use strum::IntoEnumIterator;
 
 use crate::game::{Card, DECK_SIZE, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, Suit};
@@ -41,7 +42,7 @@ impl DepotIndex {
     }
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Serialize_tuple, Deserialize_tuple, Debug, PartialEq, Eq)]
 pub struct BoardPos {
     pub depot_index: usize,
     pub card_index: usize,
@@ -188,17 +189,22 @@ impl GameState {
 
     pub fn onclick(&mut self, pos: BoardPos) {
         if self.is_busy() { return; }
-        let depot = pos.depot_index;
-        let ord = pos.card_index;
 
         if let Some(src) = self.board.selected {
-            if pos == src { self.board.selected = None; }
+            if pos == src { 
+                self.board.selected = None; 
+                return;
+            }
+            if src.depot_index == pos.depot_index && self.can_select(pos) {
+                self.board.selected = Some(pos);
+                return;
+            }
 
             let dest = BoardPos { depot_index: pos.depot_index, card_index: pos.card_index.wrapping_add(1) };
             if !self.can_move(src, dest) { return; }
             self.board.do_move(src, dest);
         } else {
-            if ord < self.board.depots[depot].len() {
+            if self.can_select(pos) {
                 self.board.selected = Some(pos);
             }
         }
