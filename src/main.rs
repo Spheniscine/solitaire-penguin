@@ -61,6 +61,9 @@ pub fn Hero() -> Element {
         GameState::init()
     });
 
+    let st = state.read();
+    let clean = !st.is_busy();
+
     let animate_timer = use_coroutine(move |mut rx: UnboundedReceiver<AnimationKey>| async move {
         while let Some(key) = rx.next().await {
             async_std::task::sleep(ANIMATION_DURATION).await;
@@ -68,8 +71,8 @@ pub fn Hero() -> Element {
         }
     });
 
-    if state.read().is_acting() {
-        animate_timer.send(state.read().animation_key);
+    if st.is_acting() {
+        animate_timer.send(st.animation_key);
     }
 
     rsx! {
@@ -144,6 +147,7 @@ pub fn Hero() -> Element {
                 width: rem(24.),
                 color: "#fff",
                 text_align: "center",
+                onclick: move |_| if clean {state.write().undo()},
                 "Undo"
             }
 
@@ -151,8 +155,8 @@ pub fn Hero() -> Element {
                 position: Vec2 { x: 0., y: 20. },
                 board: state.read().board.clone(),
                 skin,
-                onclick: move |pos| {state.write().onclick(pos);},
-                animation_key: state.read().animation_key,
+                onclick: move |pos| if clean {state.write().onclick(pos);},
+                animation_key: st.animation_key,
             }
         }
     }

@@ -102,7 +102,7 @@ impl Board {
         );
     }
 
-    pub fn advance_animations(&mut self) {
+    pub fn advance_actions(&mut self) {
         for act in self.animation_acts.drain(..) {
             match act {
                 AnimationAct::Move(cards, _pos1, pos2) => {
@@ -116,12 +116,18 @@ impl Board {
 pub type AnimationKey = u16;
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct ActionRecord {
+    pos1: BoardPos, pos2: BoardPos, auto: bool,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct GameState {
     pub board: Board,
     pub deal: Vec<Card>,
     pub num_wins: i32,
     pub random_beak: bool,
     pub animation_key: u16,
+    pub history: Vec<ActionRecord>,
 }
 
 impl GameState {
@@ -146,14 +152,15 @@ impl GameState {
             deal.swap(0, i);
         }
 
-        let mut res = Self {
+        let res = Self {
             board: Board::from_deal(&deal),
             deal,
             num_wins: 0,
             random_beak,
             animation_key: 0,
+            history: vec![],
         };
-        res.check_auto_moves();
+        //res.check_auto_moves();
 
         res
     }
@@ -226,6 +233,7 @@ impl GameState {
                     let dest = BoardPos { depot_index: dest, card_index: self.board.depots[dest].len()};
                     if self.can_move(src, dest) {
                         self.board.do_move(src, dest);
+                        self.history.push(ActionRecord { pos1: src, pos2: dest, auto: true });
                         return;
                     }
                 }
@@ -257,6 +265,7 @@ impl GameState {
             let dest = BoardPos { depot_index: pos.depot_index, card_index: pos.card_index.wrapping_add(1) };
             if !self.can_move(src, dest) { return; }
             self.board.do_move(src, dest);
+            self.history.push(ActionRecord { pos1: src, pos2: dest, auto: false });
         } else {
             if self.can_select(pos) {
                 self.board.selected = Some(pos);
@@ -267,7 +276,16 @@ impl GameState {
     pub fn advance_animations(&mut self, key: AnimationKey) {
         if key != self.animation_key { return; }
         self.animation_key = self.animation_key.wrapping_add(1);
-        self.board.advance_animations();
+        self.board.advance_actions();
         self.check_auto_moves();
+    }
+
+    pub fn undo(&mut self) {
+        if self.is_busy() { return; }
+        while let Some(rec) = self.history.pop() {
+            self.board.do_move(rec.pos2, rec.pos1);
+            self.board.advance_actions(); // no animation, as repeated card moves on same card causes problems
+            if !rec.auto { break; }
+        }
     }
 }

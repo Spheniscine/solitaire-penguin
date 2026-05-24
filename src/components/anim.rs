@@ -1,4 +1,4 @@
-use dioxus::{logger::tracing, prelude::*};
+use dioxus::prelude::*;
 use glam::Vec2;
 
 use crate::{components::rem, game::{ANIMATION_DURATION, AnimationKey}};
