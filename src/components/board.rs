@@ -81,7 +81,6 @@ pub fn BoardComponent(
                                 width: card_width,
                                 card: *card,
                                 skin,
-                                onclick: move |_| {},
                             }
                         }
                     };
