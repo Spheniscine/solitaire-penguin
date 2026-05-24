@@ -100,9 +100,7 @@ pub fn BoardComponent(
     });
 
     if is_won {
-        use_effect(move || {
-            document::eval("confetti();");
-        });
+        document::eval("confetti();");
     }
 
     rsx! {
