@@ -43,6 +43,9 @@ fn App() -> Element {
             }}
             "#,
         }
+        document::Script {
+            src: "https://cdn.jsdelivr.net/npm/@hiseb/confetti@2.1.0/dist/confetti.min.js",
+        }
         Hero {}
 
     }
@@ -157,6 +160,7 @@ pub fn Hero() -> Element {
                 skin,
                 onclick: move |pos| if clean {state.write().onclick(pos);},
                 animation_key: st.animation_key,
+                is_won: st.is_won(),
             }
         }
     }

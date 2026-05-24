@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_tuple::{Deserialize_tuple, Serialize_tuple};
 use strum::IntoEnumIterator;
 
-use crate::game::{Card, DECK_SIZE, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, Suit};
+use crate::game::{Card, DECK_SIZE, NUM_RANKS, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, Suit};
 
 pub const NUM_FOUNDATIONS: usize = NUM_SUITS;
 pub const NUM_FREECELLS: usize = 7;
@@ -124,10 +124,11 @@ pub struct ActionRecord {
 pub struct GameState {
     pub board: Board,
     pub deal: Vec<Card>,
-    pub num_wins: i32,
     pub random_beak: bool,
     pub animation_key: u16,
     pub history: Vec<ActionRecord>,
+    pub already_won: bool,
+    pub num_wins: i32,
 }
 
 impl GameState {
@@ -155,10 +156,12 @@ impl GameState {
         let res = Self {
             board: Board::from_deal(&deal),
             deal,
-            num_wins: 0,
             random_beak,
             animation_key: 0,
             history: vec![],
+
+            num_wins: 0,
+            already_won: false,
         };
         //res.check_auto_moves();
 
@@ -249,6 +252,12 @@ impl GameState {
         !self.board.animation_acts.is_empty()
     }
 
+    pub fn is_won(&self) -> bool {
+        (FOUNDATION_OFFSET .. FREECELL_OFFSET).all(|i| {
+            self.board.depots[i].len() == NUM_RANKS
+        })
+    }
+
     pub fn onclick(&mut self, pos: BoardPos) {
         if self.is_busy() { return; }
 
@@ -277,6 +286,14 @@ impl GameState {
         if key != self.animation_key { return; }
         self.animation_key = self.animation_key.wrapping_add(1);
         self.board.advance_actions();
+
+        if self.is_won() {
+            if !self.already_won {
+                self.num_wins += 1;
+                self.already_won = true;
+            }
+            return;
+        }
         self.check_auto_moves();
     }
 
