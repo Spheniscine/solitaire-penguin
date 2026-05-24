@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, CardFrame, SkinTrait, rem}, game::{AnimationAct, Board, BoardPos, Card, DepotIndex, DepotRole, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, NUM_TABLEAU_DEPOTS, Skin, Suit}};
+use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, CardFrame, Movement, SkinTrait, rem}, game::{AnimationAct, Board, BoardPos, Card, DepotIndex, DepotRole, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, NUM_TABLEAU_DEPOTS, Skin, Suit}};
 
 
 #[component]
@@ -71,14 +71,18 @@ pub fn BoardComponent(
                 let mut pos1 = *pos1;
                 let mut pos2 = *pos2;
                 cards.iter().map(move |card| {
+                    let p1 = get_pos(pos1.depot_index, pos1.card_index);
+                    let p2 = get_pos(pos2.depot_index, pos2.card_index);
                     let res = rsx! {
-                        CardComponent {
-                            position: get_pos(pos2.depot_index, pos2.card_index),
-                            animate_from: get_pos(pos1.depot_index, pos1.card_index),
-                            width: card_width,
-                            card: *card,
-                            skin,
-                            onclick: move |_| {},
+                        Movement {
+                            src_translate_vec: p1 - p2,
+                            CardComponent {
+                                position: p2,
+                                width: card_width,
+                                card: *card,
+                                skin,
+                                onclick: move |_| {},
+                            }
                         }
                     };
                     pos1.card_index += 1;
