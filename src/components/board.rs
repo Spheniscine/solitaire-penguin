@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, CardFrame, Movement, SkinTrait, rem}, game::{AnimationAct, Board, BoardPos, Card, DepotIndex, DepotRole, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, NUM_TABLEAU_DEPOTS, Skin, Suit}};
+use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, CardFrame, Movement, SkinTrait, rem}, game::{AnimationAct, AnimationKey, Board, BoardPos, Card, DepotIndex, DepotRole, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, NUM_TABLEAU_DEPOTS, Skin, Suit}};
 
 
 #[component]
@@ -10,6 +10,7 @@ pub fn BoardComponent(
     board: Board,
     skin: Skin,
     onclick: EventHandler<BoardPos>,
+    animation_key: AnimationKey,
 ) -> Element {
     let card_width = 12f32;
     let card_height = card_width * CARD_HEIGHT_RATIO;
@@ -75,6 +76,7 @@ pub fn BoardComponent(
                     let p2 = get_pos(pos2.depot_index, pos2.card_index);
                     let res = rsx! {
                         Movement {
+                            animation_key,
                             src_translate_vec: p1 - p2,
                             CardComponent {
                                 position: p2,

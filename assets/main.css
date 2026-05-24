@@ -77,7 +77,15 @@ body {
     background-size: var(--s) var(--s)
 }
 
-@keyframes movement {
+@keyframes movement0 {
+    0% {
+        transform: translate(var(--translateX), var(--translateY));
+    }
+    100% {
+        transform: translate(0, 0);
+    }
+}
+@keyframes movement1 {
     0% {
         transform: translate(var(--translateX), var(--translateY));
     }

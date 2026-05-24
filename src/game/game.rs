@@ -220,7 +220,7 @@ impl GameState {
         if self.is_busy() { return; }
 
         for depot in FREECELL_OFFSET .. NUM_DEPOTS {
-            if let Some(&card) = self.board.depots[depot].last() {
+            if let Some(_) = self.board.depots[depot].last() {
                 let src = BoardPos { depot_index: depot, card_index: self.board.depots[depot].len() - 1 };
                 for dest in FOUNDATION_OFFSET .. FREECELL_OFFSET {
                     let dest = BoardPos { depot_index: dest, card_index: self.board.depots[dest].len()};
