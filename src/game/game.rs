@@ -48,7 +48,7 @@ pub struct BoardPos {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
-pub enum Action {
+pub enum AnimationAct {
     Move(Vec<Card>, BoardPos, BoardPos),
 }
 
@@ -57,7 +57,7 @@ pub struct Board {
     pub depots: Vec<Vec<Card>>,
     pub beak: Card,
     pub selected: Option<BoardPos>,
-    pub actions: Vec<Action>,
+    pub animation_acts: Vec<AnimationAct>,
 }
 
 impl Board {
@@ -77,7 +77,7 @@ impl Board {
         }
 
         Board {
-            depots, beak, selected: None, actions: vec![],
+            depots, beak, selected: None, animation_acts: vec![],
         }
     }
 
@@ -92,15 +92,15 @@ impl Board {
     pub fn do_move(&mut self, pos1: BoardPos, pos2: BoardPos) {
         self.selected = None;
         let cards = self.depots[pos1.depot_index].drain(pos1.card_index ..).collect();
-        self.actions.push(
-            Action::Move(cards, pos1, pos2)
+        self.animation_acts.push(
+            AnimationAct::Move(cards, pos1, pos2)
         );
     }
 
-    pub fn finalize_actions(&mut self) {
-        for act in self.actions.drain(..) {
+    pub fn advance_animations(&mut self) {
+        for act in self.animation_acts.drain(..) {
             match act {
-                Action::Move(cards, pos1, pos2) => {
+                AnimationAct::Move(cards, _pos1, pos2) => {
                     self.depots[pos2.depot_index].extend(cards);
                 },
             }
@@ -108,12 +108,15 @@ impl Board {
     }
 }
 
+pub type AnimationKey = u16;
+
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct GameState {
     pub board: Board,
     pub deal: Vec<Card>,
     pub num_wins: i32,
     pub random_beak: bool,
+    pub animation_key: u16,
 }
 
 impl GameState {
@@ -143,6 +146,7 @@ impl GameState {
             deal,
             num_wins: 0,
             random_beak,
+            animation_key: 0,
         }
     }
 
@@ -179,7 +183,7 @@ impl GameState {
     }
 
     pub fn is_acting(&self) -> bool {
-        !self.board.actions.is_empty()
+        !self.board.animation_acts.is_empty()
     }
 
     pub fn onclick(&mut self, pos: BoardPos) {
@@ -200,7 +204,9 @@ impl GameState {
         }
     }
 
-    pub fn finalize_actions(&mut self) {
-        self.board.finalize_actions();
+    pub fn advance_animations(&mut self, key: AnimationKey) {
+        if key != self.animation_key { return; }
+        self.animation_key = self.animation_key.wrapping_add(1);
+        self.board.advance_animations();
     }
 }

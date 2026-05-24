@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, CardFrame, SkinTrait, rem}, game::{Action, Board, BoardPos, Card, DepotIndex, DepotRole, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, NUM_TABLEAU_DEPOTS, Skin, Suit}};
+use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, CardFrame, SkinTrait, rem}, game::{AnimationAct, Board, BoardPos, Card, DepotIndex, DepotRole, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, NUM_TABLEAU_DEPOTS, Skin, Suit}};
 
 
 #[component]
@@ -65,9 +65,9 @@ pub fn BoardComponent(
         card_height + column_card_offset.y * d as f32
     } else {0.};
 
-    let anim_iter = board.actions.iter().flat_map(|act| {
+    let anim_iter = board.animation_acts.iter().flat_map(|act| {
         match act {
-            Action::Move(cards, pos1, pos2) => {
+            AnimationAct::Move(cards, pos1, pos2) => {
                 let mut pos1 = *pos1;
                 let mut pos2 = *pos2;
                 cards.iter().map(move |card| {

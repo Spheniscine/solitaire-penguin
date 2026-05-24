@@ -2,7 +2,7 @@ use async_std::stream::StreamExt;
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{BoardComponent, rem}, game::{ANIMATION_DURATION, GameState, Skin}};
+use crate::{components::{BoardComponent, rem}, game::{ANIMATION_DURATION, AnimationKey, GameState, Skin}};
 
 mod game;
 mod components;
@@ -61,15 +61,15 @@ pub fn Hero() -> Element {
         GameState::init()
     });
 
-    let animate_timer = use_coroutine(move |mut rx: UnboundedReceiver<()>| async move {
-        while let Some(_) = rx.next().await {
+    let animate_timer = use_coroutine(move |mut rx: UnboundedReceiver<AnimationKey>| async move {
+        while let Some(key) = rx.next().await {
             async_std::task::sleep(ANIMATION_DURATION).await;
-            state.write().finalize_actions();
+            state.write().advance_animations(key);
         }
     });
 
-    if state().is_acting() {
-        animate_timer.send(());
+    if state.read().is_acting() {
+        animate_timer.send(state.read().animation_key);
     }
 
     rsx! {
