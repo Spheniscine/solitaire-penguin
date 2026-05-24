@@ -155,7 +155,7 @@ pub fn BoardComponent(
                     top: rem(25.),
                     left: rem(18.5),
                     width: rem(59.),
-                    background_color: "#005",
+                    background_color: "#505",
                     padding: rem(3.),
                     color: "#fff",
                     font_size: rem(7.),
