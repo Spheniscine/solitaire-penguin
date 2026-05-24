@@ -50,7 +50,7 @@ pub fn BoardComponent(
                 }
             },
             DepotRole::Tableau => {
-                skin.render_rank(&Card { rank: board.column_head_rank(), suit: Suit::Spades })
+                skin.render_rank(&Card { rank: board.tableau_head_rank(), suit: Suit::Spades })
             },
         }
     };

@@ -61,6 +61,10 @@ pub struct Board {
     pub animation_acts: Vec<AnimationAct>,
 }
 
+pub fn rank_under(rank: u8) -> u8 {
+    if rank == RANK_MIN { RANK_MAX } else { rank - 1 }
+}
+
 impl Board {
     pub fn from_deal(deal: &Vec<Card>) -> Self {
         assert_eq!(deal.len(), DECK_SIZE);
@@ -86,8 +90,8 @@ impl Board {
         self.beak.rank
     }
 
-    pub fn column_head_rank(&self) -> u8 {
-        if self.foundation_rank() == RANK_MIN { RANK_MAX } else {self.foundation_rank() - 1}
+    pub fn tableau_head_rank(&self) -> u8 {
+        rank_under(self.foundation_rank())
     }
 
     pub fn do_move(&mut self, pos1: BoardPos, pos2: BoardPos) {
@@ -151,30 +155,60 @@ impl GameState {
         }
     }
 
+    pub fn can_stack(&self, back: Card, front: Card) -> bool {
+        back.suit == front.suit && front.rank == rank_under(back.rank)
+    }
+
+    pub fn can_sort(&self, back: Card, front: Card) -> bool {
+        back.suit == front.suit && back.rank == rank_under(front.rank)
+    }
+
     pub fn can_select(&mut self, pos: BoardPos) -> bool {
         let depot = pos.depot_index;
         let ord = pos.card_index;
 
         // todo: rules
-        ord < self.board.depots[depot].len()
+        if ord >= self.board.depots[depot].len() {
+            return false;
+        }
+        let slice = &self.board.depots[depot][ord..];
+
+        match DepotIndex(depot).role() {
+            DepotRole::Foundation => false,
+            DepotRole::FreeCell => { slice.len() <= 1 },
+            DepotRole::Tableau => {
+                slice.windows(2).all(|w| self.can_stack(w[0], w[1]))
+            },
+        }
     }
 
     pub fn can_move(&mut self, pos1: BoardPos, pos2: BoardPos) -> bool {
-        let max_tableau_test: usize = 18;
+        //let max_tableau_test: usize = 18;
 
         if pos1.depot_index == pos2.depot_index { return false; }
-        let num_moved = self.board.depots[pos1.depot_index].len() - pos1.card_index;
-        if pos2.card_index != self.board.depots[pos2.depot_index].len() { return false; }
-        // todo: rules
+        let depot1 = &self.board.depots[pos1.depot_index];
+        let depot2 = &self.board.depots[pos2.depot_index];
+        let num_moved = depot1.len() - pos1.card_index;
+        if pos2.card_index != depot2.len() { return false; }
+       
+        let card = depot1[pos1.card_index];
         match DepotIndex(pos2.depot_index).role() {
             DepotRole::Foundation => {
-                num_moved == 1
+                num_moved == 1 && if let Some(&c) = depot2.last() {
+                    self.can_sort(c, card)
+                } else {
+                    self.board.foundation_rank() == card.rank
+                }
             },
             DepotRole::FreeCell => {
-                num_moved == 1
+                depot2.is_empty() && num_moved == 1
             },
             DepotRole::Tableau => {
-                num_moved + self.board.depots[pos2.depot_index].len() <= max_tableau_test
+                if let Some(&c) = depot2.last() {
+                    self.can_stack(c, card)
+                } else {
+                    self.board.tableau_head_rank() == card.rank
+                }
             },
         }
     }
