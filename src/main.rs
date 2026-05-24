@@ -152,6 +152,7 @@ pub fn Hero() -> Element {
                 board: state.read().board.clone(),
                 skin,
                 onclick: move |pos| {state.write().onclick(pos);},
+                animation_key: state.read().animation_key,
             }
         }
     }
