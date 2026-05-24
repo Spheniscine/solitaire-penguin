@@ -146,13 +146,16 @@ impl GameState {
             deal.swap(0, i);
         }
 
-        Self {
+        let mut res = Self {
             board: Board::from_deal(&deal),
             deal,
             num_wins: 0,
             random_beak,
             animation_key: 0,
-        }
+        };
+        res.check_auto_moves();
+
+        res
     }
 
     pub fn can_stack(&self, back: Card, front: Card) -> bool {
@@ -213,6 +216,23 @@ impl GameState {
         }
     }
 
+    pub fn check_auto_moves(&mut self) {
+        if self.is_busy() { return; }
+
+        for depot in FREECELL_OFFSET .. NUM_DEPOTS {
+            if let Some(&card) = self.board.depots[depot].last() {
+                let src = BoardPos { depot_index: depot, card_index: self.board.depots[depot].len() - 1 };
+                for dest in FOUNDATION_OFFSET .. FREECELL_OFFSET {
+                    let dest = BoardPos { depot_index: dest, card_index: self.board.depots[dest].len()};
+                    if self.can_move(src, dest) {
+                        self.board.do_move(src, dest);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
     pub fn is_busy(&self) -> bool {
         self.is_acting()
     }
@@ -248,5 +268,6 @@ impl GameState {
         if key != self.animation_key { return; }
         self.animation_key = self.animation_key.wrapping_add(1);
         self.board.advance_animations();
+        self.check_auto_moves();
     }
 }
