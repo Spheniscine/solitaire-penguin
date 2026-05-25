@@ -19,6 +19,8 @@ pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
     skin: S,
     #[props(default)]
     onclick: EventHandler<MouseEvent>,
+    #[props(default)]
+    ondoubleclick: EventHandler<MouseEvent>,
 ) -> Element {
     let pt = width / 12.;
     let pt = |x: f32| {
@@ -44,7 +46,7 @@ pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
             padding: pt(0.5),
             color: skin.get_color(&card),
 
-            onclick,
+            onclick, ondoubleclick,
 
             div { display: "flex", align_items: "center", {skin.render_rank(&card)}},
             div { display: "flex", align_items: "center", {skin.render_suit(&card)}},

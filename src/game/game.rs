@@ -231,14 +231,18 @@ impl GameState {
         for depot in FREECELL_OFFSET .. NUM_DEPOTS {
             if let Some(_) = self.board.depots[depot].last() {
                 let src = BoardPos { depot_index: depot, card_index: self.board.depots[depot].len() - 1 };
-                for dest in FOUNDATION_OFFSET .. FREECELL_OFFSET {
-                    let dest = BoardPos { depot_index: dest, card_index: self.board.depots[dest].len()};
-                    if self.can_move(src, dest) {
-                        self.board.do_move(src, dest);
-                        self.history.push(ActionRecord { pos1: src, pos2: dest, auto: true });
-                        return;
-                    }
-                }
+                self.try_sort(src, true);
+            }
+        }
+    }
+
+    fn try_sort(&mut self, src: BoardPos, auto: bool) {
+        for dest in FOUNDATION_OFFSET .. FREECELL_OFFSET {
+            let dest = BoardPos { depot_index: dest, card_index: self.board.depots[dest].len()};
+            if self.can_move(src, dest) {
+                self.board.do_move(src, dest);
+                self.history.push(ActionRecord { pos1: src, pos2: dest, auto });
+                return;
             }
         }
     }
@@ -293,6 +297,14 @@ impl GameState {
                 self.board.selected = Some(pos);
             }
         }
+    }
+
+    pub fn ondoubleclick(&mut self, pos: BoardPos) {
+        if self.is_busy() { return; }
+        let depot = pos.depot_index;
+        if DepotIndex(depot).role() == DepotRole::Foundation { return; }
+        if self.board.depots[depot].len() != pos.card_index.saturating_add(1) { return; }
+        self.try_sort(pos, false);
     }
 
     pub fn advance_animations(&mut self, key: AnimationKey) {

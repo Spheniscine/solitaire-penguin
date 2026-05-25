@@ -9,11 +9,12 @@ pub fn BoardComponent(
     position: Vec2,
     board: Board,
     skin: Skin,
+    #[props(default)]
     onclick: EventHandler<BoardPos>,
-
+    #[props(default)]
+    ondoubleclick: EventHandler<BoardPos>,
     #[props(default)]
     animation_key: AnimationKey,
-
     #[props(default)]
     is_won: bool,
 ) -> Element {
@@ -142,6 +143,9 @@ pub fn BoardComponent(
                         skin,
                         onclick: move |_| {
                             onclick.call(BoardPos { depot_index: depot, card_index: i })
+                        },
+                        ondoubleclick: move |_| {
+                            ondoubleclick.call(BoardPos { depot_index: depot, card_index: i })
                         },
                     }
                 }
