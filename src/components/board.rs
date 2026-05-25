@@ -71,7 +71,7 @@ pub fn BoardComponent(
         card_height + column_card_offset.y * d as f32
     } else {0.};
 
-    let anim_iter = board.animation_acts.iter().enumerate().map(|(i, act)| {
+    let anims = board.animation_acts.iter().enumerate().map(|(i, act)| {
         match act {
             AnimationAct::Move(cards, pos1, pos2) => {
                 let mut pos1 = *pos1;
@@ -151,15 +151,13 @@ pub fn BoardComponent(
                 }
             }
 
-            for anim in anim_iter {
-                {anim},
-            }
+            {anims}
 
             if is_won {
                 div {
                     position: "absolute",
                     top: rem(25.),
-                    left: rem(18.5),
+                    left: rem(17.5),
                     width: rem(59.),
                     background_color: "#505",
                     padding: rem(3.),
