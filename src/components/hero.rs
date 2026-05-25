@@ -25,7 +25,7 @@ pub fn Hero() -> Element {
         document::eval("confetti();");
     });
 
-    
+
     let st = state.read();
     let clean = !st.is_busy(); // interactions should test this before write()-ing to state, to prevent slowdowns
 
@@ -56,6 +56,7 @@ pub fn Hero() -> Element {
                 width: rem(24.),
                 color: "#fff",
                 text_align: "center",
+                onclick: move |_| if clean {state.write().new_game()},
                 "New Game"
             }
 
@@ -84,6 +85,7 @@ pub fn Hero() -> Element {
                 width: rem(24.),
                 color: "#fff",
                 text_align: "center",
+                onclick: move |_| if clean {state.write().restart()},
                 "Restart"
             }
 

@@ -132,7 +132,7 @@ pub struct GameState {
 }
 
 impl GameState {
-    pub fn new_deal(rng: &mut impl Rng) -> Vec<Card> {
+    pub fn new_deal(rng: &mut impl Rng, random_beak: bool) -> Vec<Card> {
         let mut deck = Vec::with_capacity(DECK_SIZE);
         for rank in RANKS {
             for suit in Suit::iter() {
@@ -141,17 +141,17 @@ impl GameState {
         }
 
         deck.shuffle(rng);
+        if !random_beak {
+            let beak = Card { rank: 1, suit: Suit::Spades };
+            let i = deck.iter().position(|&card| card == beak).expect("1S not found in deck, should be full deck");
+            deck.swap(0, i);
+        }
+
         deck
     }
     pub fn init() -> Self {
-        let mut deal = Self::new_deal(&mut rand::rng());
         let random_beak = false;
-
-        if !random_beak {
-            let beak = Card { rank: 1, suit: Suit::Spades };
-            let i = deal.iter().position(|&card| card == beak).expect("1S not found in deck, should be full deck");
-            deal.swap(0, i);
-        }
+        let deal = Self::new_deal(&mut rand::rng(), random_beak);
 
         let res = Self {
             board: Board::from_deal(&deal),
@@ -255,6 +255,20 @@ impl GameState {
         (FOUNDATION_OFFSET .. FREECELL_OFFSET).all(|i| {
             self.board.depots[i].len() == NUM_RANKS
         })
+    }
+
+    pub fn restart(&mut self) {
+        if self.history.is_empty() { return; }
+        self.board = Board::from_deal(&self.deal);
+        self.history.clear();
+    }
+
+    pub fn new_game(&mut self) {
+        let deal = Self::new_deal(&mut rand::rng(), self.random_beak);
+        self.board = Board::from_deal(&deal);
+        self.deal = deal;
+        self.history.clear();
+        self.already_won = false;
     }
 
     pub fn onclick(&mut self, pos: BoardPos) {
