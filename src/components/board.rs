@@ -105,10 +105,6 @@ pub fn BoardComponent(
         }
     });
 
-    if is_won {
-        document::eval("confetti();");
-    }
-
     rsx! {
         div {
             position: "absolute",

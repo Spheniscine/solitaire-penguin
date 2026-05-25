@@ -17,6 +17,15 @@ pub fn Hero() -> Element {
         GameState::init()
     });
 
+    let confetti_counter = use_memo(move || {
+        state.read().num_wins
+    });
+    use_effect(move || {
+        let _ = confetti_counter.read();
+        document::eval("confetti();");
+    });
+
+    
     let st = state.read();
     let clean = !st.is_busy(); // interactions should test this before write()-ing to state, to prevent slowdowns
 
