@@ -1,15 +1,20 @@
-use async_std::stream::StreamExt;
 use dioxus::prelude::*;
-use glam::Vec2;
 
-use crate::{components::{BoardComponent, rem}, game::{ANIMATION_DURATION, AnimationKey, GameState, Skin}};
+use crate::components::Hero;
 
 mod game;
 mod components;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
-const MAIN_CSS: Asset = asset!("/assets/main.css");
+
+// altered version of KaTeX_Main to include filled "red" suits
 const KATEX_SUITS: Asset = asset!("/assets/KaTeX_Suits.woff2");
+
+// from https://www.confettijs.org/
+const CONFETTI_JS: Asset = asset!("/assets/confetti.min.js");
+
+// const _RAND_RECOMPILE: u64 = 0x4a2a5cf9126cd711; // comment and uncomment to force recompilation
+const MAIN_CSS: &str = const_css_minify::minify!("../assets/main.css");
 
 fn main() {
     dioxus::launch(App);
@@ -32,7 +37,7 @@ fn App() -> Element {
             rel: "stylesheet",
         }
         document::Link { rel: "icon", href: FAVICON }
-        document::Link { rel: "stylesheet", href: MAIN_CSS }
+        document::Style {{MAIN_CSS}}
         document::Style {
             r#"
             @font-face {{
@@ -43,125 +48,8 @@ fn App() -> Element {
             }}
             "#,
         }
-        document::Script {
-            src: "https://cdn.jsdelivr.net/npm/@hiseb/confetti@2.1.0/dist/confetti.min.js",
-        }
+        document::Script { src: CONFETTI_JS }
         Hero {}
 
-    }
-}
-
-#[component]
-pub fn Hero() -> Element {
-
-    let skin = Skin { 
-        ranks: game::RankSkin::Numbers, 
-        suits: game::SuitSkin::Animals, 
-        colors: game::ColorSkin::FourColor,
-    };
-
-    let mut state = use_signal(|| {
-        GameState::init()
-    });
-
-    let st = state.read();
-    let clean = !st.is_busy(); // interactions should test this before write()-ing to state, to prevent slowdowns
-
-    let animate_timer = use_coroutine(move |mut rx: UnboundedReceiver<AnimationKey>| async move {
-        while let Some(key) = rx.next().await {
-            async_std::task::sleep(ANIMATION_DURATION).await;
-            state.write().advance_animations(key);
-        }
-    });
-
-    if st.is_acting() {
-        animate_timer.send(st.animation_key);
-    }
-
-    rsx! {
-        div {
-            id: "hero",
-            class: "select-none",
-
-            div {
-                position: "absolute",
-                border: "{rem(0.5)} solid #00B163",
-                border_radius: rem(1.),
-                padding: rem(1.),
-                top: rem(2.),
-                left: rem(2.),
-                font_size: rem(4.),
-                width: rem(24.),
-                color: "#fff",
-                text_align: "center",
-                "New Game"
-            }
-
-            div {
-                position: "absolute",
-                border: "{rem(0.5)} solid #00B163",
-                border_radius: rem(1.),
-                padding: rem(1.),
-                top: rem(2.),
-                right: rem(2.),
-                font_size: rem(4.),
-                width: rem(24.),
-                color: "#fff",
-                text_align: "center",
-                "Settings"
-            }
-
-            div {
-                position: "absolute",
-                border: "{rem(0.5)} solid #00B163",
-                border_radius: rem(1.),
-                padding: rem(1.),
-                top: rem(2.),
-                right: rem(30.),
-                font_size: rem(4.),
-                width: rem(24.),
-                color: "#fff",
-                text_align: "center",
-                "Restart"
-            }
-
-            div {
-                position: "absolute",
-                border: "{rem(0.5)} solid #00B163",
-                border_radius: rem(1.),
-                padding: rem(1.),
-                top: rem(11.),
-                right: rem(2.),
-                font_size: rem(4.),
-                width: rem(24.),
-                color: "#fff",
-                text_align: "center",
-                "Help"
-            }
-
-            div {
-                position: "absolute",
-                border: "{rem(0.5)} solid #00B163",
-                border_radius: rem(1.),
-                padding: rem(1.),
-                top: rem(11.),
-                right: rem(30.),
-                font_size: rem(4.),
-                width: rem(24.),
-                color: "#fff",
-                text_align: "center",
-                onclick: move |_| if clean {state.write().undo()},
-                "Undo"
-            }
-
-            BoardComponent { 
-                position: Vec2 { x: 0., y: 20. },
-                board: state.read().board.clone(),
-                skin,
-                onclick: move |pos| if clean {state.write().onclick(pos);},
-                animation_key: st.animation_key,
-                is_won: st.is_won(),
-            }
-        }
     }
 }

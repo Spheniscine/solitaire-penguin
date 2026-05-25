@@ -12,3 +12,6 @@ pub use board::*;
 
 mod anim;
 pub use anim::*;
+
+mod hero;
+pub use hero::*;
