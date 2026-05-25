@@ -180,7 +180,6 @@ impl GameState {
         let depot = pos.depot_index;
         let ord = pos.card_index;
 
-        // todo: rules
         if ord >= self.board.depots[depot].len() {
             return false;
         }

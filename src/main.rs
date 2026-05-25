@@ -65,7 +65,7 @@ pub fn Hero() -> Element {
     });
 
     let st = state.read();
-    let clean = !st.is_busy();
+    let clean = !st.is_busy(); // interactions should test this before write()-ing to state, to prevent slowdowns
 
     let animate_timer = use_coroutine(move |mut rx: UnboundedReceiver<AnimationKey>| async move {
         while let Some(key) = rx.next().await {

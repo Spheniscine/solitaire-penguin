@@ -71,7 +71,7 @@ pub fn BoardComponent(
         card_height + column_card_offset.y * d as f32
     } else {0.};
 
-    let anim_iter = board.animation_acts.iter().flat_map(|act| {
+    let anim_iter = board.animation_acts.iter().enumerate().flat_map(|(i, act)| {
         match act {
             AnimationAct::Move(cards, pos1, pos2) => {
                 let mut pos1 = *pos1;
@@ -81,7 +81,7 @@ pub fn BoardComponent(
                     let p2 = get_pos(pos2.depot_index, pos2.card_index);
                     let res = rsx! {
                         Movement {
-                            animation_key,
+                            key: "{animation_key},{i}", // needed to force remounts, so animations don't get "stale" and refuse to replay
                             src_translate_vec: p1 - p2,
                             CardComponent {
                                 position: p2,
