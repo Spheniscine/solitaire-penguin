@@ -231,20 +231,21 @@ impl GameState {
         for depot in FREECELL_OFFSET .. NUM_DEPOTS {
             if let Some(_) = self.board.depots[depot].last() {
                 let src = BoardPos { depot_index: depot, card_index: self.board.depots[depot].len() - 1 };
-                self.try_sort(src, true);
+                if self.try_sort(src, true) { return; }
             }
         }
     }
 
-    fn try_sort(&mut self, src: BoardPos, auto: bool) {
+    fn try_sort(&mut self, src: BoardPos, auto: bool) -> bool {
         for dest in FOUNDATION_OFFSET .. FREECELL_OFFSET {
             let dest = BoardPos { depot_index: dest, card_index: self.board.depots[dest].len()};
             if self.can_move(src, dest) {
                 self.board.do_move(src, dest);
                 self.history.push(ActionRecord { pos1: src, pos2: dest, auto });
-                return;
+                return true;
             }
         }
+        false
     }
 
     pub fn is_busy(&self) -> bool {
