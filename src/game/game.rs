@@ -308,8 +308,14 @@ impl GameState {
         if self.is_busy() { return; }
         let depot = pos.depot_index;
         if DepotIndex(depot).role() == DepotRole::Foundation { return; }
-        if self.board.depots[depot].len() != pos.card_index.saturating_add(1) { return; }
-        self.try_sort(pos, false);
+        for dest in [FOUNDATIONS, TABLEAU_COLUMNS, FREECELLS].into_iter().flatten() {
+            let dest = BoardPos { depot_index: dest, card_index: self.board.depots[dest].len()};
+            if self.can_move(pos, dest) {
+                self.board.do_move(pos, dest);
+                self.history.push(ActionRecord { pos1: pos, pos2: dest, auto: false });
+                return;
+            }
+        }
     }
 
     pub fn advance_animations(&mut self, key: AnimationKey) {
