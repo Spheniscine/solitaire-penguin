@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{ops::Range, time::Duration};
 
 use rand::{Rng, seq::SliceRandom};
 use serde::{Deserialize, Serialize};
@@ -16,6 +16,10 @@ pub const NUM_DEPOTS: usize = NUM_FOUNDATIONS + NUM_FREECELLS + NUM_TABLEAU_DEPO
 pub const FOUNDATION_OFFSET: usize = 0;
 pub const FREECELL_OFFSET: usize = NUM_FOUNDATIONS;
 pub const TABLEAU_OFFSET: usize = FREECELL_OFFSET + NUM_FREECELLS;
+
+pub const FOUNDATIONS: Range<usize> = FOUNDATION_OFFSET .. FREECELL_OFFSET;
+pub const FREECELLS: Range<usize> = FREECELL_OFFSET .. TABLEAU_OFFSET;
+pub const TABLEAU_COLUMNS: Range<usize> = TABLEAU_OFFSET .. NUM_DEPOTS;
 
 pub const ANIMATION_DURATION: Duration = Duration::from_millis(200);
 
@@ -69,15 +73,15 @@ impl Board {
     pub fn from_deal(deal: &Vec<Card>) -> Self {
         assert_eq!(deal.len(), DECK_SIZE);
         let mut depots = vec![vec![]; NUM_DEPOTS];
-        let mut column_ite = std::iter::repeat(0..NUM_TABLEAU_DEPOTS).flatten();
-        let mut foundation_ite = 0..NUM_FOUNDATIONS;
+        let mut column_ite = std::iter::repeat(TABLEAU_COLUMNS).flatten();
+        let mut foundation_ite = FOUNDATIONS;
 
         let beak = deal[0];
         for &card in deal {
             if card != beak && card.rank == beak.rank {
-                depots[foundation_ite.next().unwrap() + FOUNDATION_OFFSET].push(card);
+                depots[foundation_ite.next().unwrap()].push(card);
             } else {
-                depots[column_ite.next().unwrap() + TABLEAU_OFFSET].push(card);
+                depots[column_ite.next().unwrap()].push(card);
             }
         }
 
@@ -237,7 +241,7 @@ impl GameState {
     }
 
     fn try_sort(&mut self, src: BoardPos, auto: bool) -> bool {
-        for dest in FOUNDATION_OFFSET .. FREECELL_OFFSET {
+        for dest in FOUNDATIONS {
             let dest = BoardPos { depot_index: dest, card_index: self.board.depots[dest].len()};
             if self.can_move(src, dest) {
                 self.board.do_move(src, dest);
@@ -257,7 +261,7 @@ impl GameState {
     }
 
     pub fn is_won(&self) -> bool {
-        (FOUNDATION_OFFSET .. FREECELL_OFFSET).all(|i| {
+        FOUNDATIONS.clone().all(|i| {
             self.board.depots[i].len() == NUM_RANKS
         })
     }
