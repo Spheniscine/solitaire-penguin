@@ -81,6 +81,39 @@ body {
     box-shadow: 0 0 1rem 1rem #ff0;
 }
 
+#settingsDialog {
+    margin: 2.5%; 
+    padding: 5rem; 
+    width: 85%; 
+    height: 91.5%; 
+    background-color: #ccc; 
+    font-size: 5rem;
+    border-radius: 2rem;
+}
+#settingsDialog:focus { outline: none; }
+#settingsDialog p {
+    margin-top: 3rem; 
+    margin-bottom: 3rem;
+}
+#settingsDialog select {
+    font-size: 5rem; 
+    font-family: 'Noto Sans', sans-serif;
+}
+#settingsDialog input[type="checkbox"] {
+    width: 4rem; 
+    height: 4rem;
+}
+#settingsDialog button {
+    width: 20rem; 
+    font-size: 5rem; 
+    font-family: 'Noto Sans', sans-serif;
+}
+#settingsDialog .copyright {
+    position: absolute; 
+    bottom: 1.5rem; 
+    font-size: 3rem;
+}
+
 /* .card-pattern-1 {
     --card-width: 11rem;
     --s: calc(var(--card-width) / 1.3);

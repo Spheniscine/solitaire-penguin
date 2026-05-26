@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_tuple::{Deserialize_tuple, Serialize_tuple};
 use strum::IntoEnumIterator;
 
-use crate::game::{Card, DECK_SIZE, NUM_RANKS, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, Suit};
+use crate::{components::LocalStorage, game::{Card, ColorSkin, DECK_SIZE, NUM_RANKS, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, RankSkin, SettingsState, Skin, Suit, SuitSkin}};
 
 pub const NUM_FOUNDATIONS: usize = NUM_SUITS;
 pub const NUM_FREECELLS: usize = 7;
@@ -124,15 +124,26 @@ pub struct ActionRecord {
     pos1: BoardPos, pos2: BoardPos, auto: bool,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum ScreenState {
+    Game, Settings
+}
+
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct GameState {
     pub board: Board,
     pub deal: Vec<Card>,
-    pub random_beak: bool,
     pub animation_key: u16,
     pub history: Vec<ActionRecord>,
     pub already_won: bool,
     pub num_wins: i32,
+
+    pub screen_state: ScreenState,
+
+    pub allow_undo: bool,
+    pub random_beak: bool,
+    pub auto_play: bool,
+    pub skin: Skin,
 }
 
 impl GameState {
@@ -157,18 +168,30 @@ impl GameState {
         let random_beak = false;
         let deal = Self::new_deal(&mut rand::rng(), random_beak);
 
+        let skin = Skin { 
+            ranks: RankSkin::Numbers, 
+            suits: SuitSkin::Animals, 
+            colors: ColorSkin::FourColor,
+        };
+
         let res = Self {
             board: Board::from_deal(&deal),
             deal,
-            random_beak,
             animation_key: 0,
             history: vec![],
-
             num_wins: 0,
             already_won: false,
+
+            screen_state: ScreenState::Game,
+
+            allow_undo: true,
+            random_beak,
+            auto_play: true,
+            skin,
         };
         //res.check_auto_moves();
 
+        LocalStorage.save_game_state(&res);
         res
     }
 
@@ -231,6 +254,7 @@ impl GameState {
 
     pub fn check_auto_moves(&mut self) {
         if self.is_busy() { return; }
+        if !self.auto_play { return; }
 
         for depot in FREECELL_OFFSET .. NUM_DEPOTS {
             if let Some(_) = self.board.depots[depot].last() {
@@ -267,9 +291,10 @@ impl GameState {
     }
 
     pub fn restart(&mut self) {
-        if self.history.is_empty() { return; }
+        if self.history.is_empty() || !self.undo_possible() { return; }
         self.board = Board::from_deal(&self.deal);
         self.history.clear();
+        LocalStorage.save_game_state(&self);
     }
 
     pub fn new_game(&mut self) {
@@ -278,6 +303,7 @@ impl GameState {
         self.deal = deal;
         self.history.clear();
         self.already_won = false;
+        LocalStorage.save_game_state(&self);
     }
 
     pub fn onclick(&mut self, pos: BoardPos) {
@@ -321,6 +347,7 @@ impl GameState {
     pub fn advance_animations(&mut self, key: AnimationKey) {
         if key != self.animation_key { return; }
         self.animation_key = self.animation_key.wrapping_add(1);
+        
         self.board.advance_actions();
 
         if self.is_won() {
@@ -328,17 +355,41 @@ impl GameState {
                 self.num_wins += 1;
                 self.already_won = true;
             }
-            return;
+        } else {
+            self.check_auto_moves();
         }
-        self.check_auto_moves();
+
+        if !self.is_busy() { LocalStorage.save_game_state(&self); }
+    }
+
+    pub fn undo_possible(&mut self) -> bool {
+        self.allow_undo && !self.history.is_empty()
     }
 
     pub fn undo(&mut self) {
-        if self.is_busy() { return; }
+        if self.is_busy() || !self.undo_possible() { return; }
         while let Some(rec) = self.history.pop() {
             self.board.do_move(rec.pos2, rec.pos1);
             self.board.advance_actions(); // no animation, as repeated card moves on same card causes problems
             if !rec.auto { break; }
         }
+        LocalStorage.save_game_state(&self);
+    }
+
+    pub fn new_settings_state(&self) -> SettingsState {
+        SettingsState {
+            allow_undo: self.allow_undo,
+            random_beak: self.random_beak,
+            auto_play: self.auto_play,
+            skin: self.skin,
+        }
+    }
+
+    pub fn apply_settings(&mut self, settings: &SettingsState){
+        self.allow_undo = settings.allow_undo;
+        self.random_beak = settings.random_beak;
+        self.auto_play = settings.auto_play;
+        self.skin = settings.skin;
+        LocalStorage.save_game_state(&self);
     }
 }
