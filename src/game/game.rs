@@ -140,6 +140,7 @@ pub struct GameState {
 
     pub screen_state: ScreenState,
 
+    pub allow_undo: bool,
     pub random_beak: bool,
     pub auto_play: bool,
     pub skin: Skin,
@@ -183,6 +184,7 @@ impl GameState {
 
             screen_state: ScreenState::Game,
 
+            allow_undo: true,
             random_beak,
             auto_play: true,
             skin,
@@ -288,7 +290,7 @@ impl GameState {
     }
 
     pub fn restart(&mut self) {
-        if self.history.is_empty() { return; }
+        if self.history.is_empty() || !self.undo_possible() { return; }
         self.board = Board::from_deal(&self.deal);
         self.history.clear();
     }
@@ -354,8 +356,12 @@ impl GameState {
         self.check_auto_moves();
     }
 
+    pub fn undo_possible(&mut self) -> bool {
+        self.allow_undo && !self.history.is_empty()
+    }
+
     pub fn undo(&mut self) {
-        if self.is_busy() { return; }
+        if self.is_busy() || !self.undo_possible() { return; }
         while let Some(rec) = self.history.pop() {
             self.board.do_move(rec.pos2, rec.pos1);
             self.board.advance_actions(); // no animation, as repeated card moves on same card causes problems

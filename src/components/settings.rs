@@ -40,6 +40,13 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
             onkeydown: onkeydown,
 
             p {
+                "Allow undo/restart: "
+                input {
+                    r#type: "checkbox",
+                }
+            }
+
+            p {
                 "Auto-play to foundations: "
                 input {
                     r#type: "checkbox",
