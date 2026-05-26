@@ -1,19 +1,20 @@
 use dioxus::prelude::*;
 use strum::IntoEnumIterator;
 
-use crate::game::{ColorSkin, GameState, RankSkin, SuitSkin};
+use crate::game::{ColorSkin, GameState, RankSkin, ScreenState, SuitSkin};
 
 #[component]
 pub fn Settings(game_state: Signal<GameState>) -> Element {
-    let mut gs = game_state;
+    let mut game_state = game_state;
+    let mut state = use_signal(|| {
+        game_state.read().new_settings_state()
+    });
     let mut ok = move || {
-        let _ = gs.write();
-        // game_state.write().apply_settings(&state.read());
-        // game_state.write().show_settings = false;
+        game_state.write().apply_settings(&state.read());
+        game_state.write().screen_state = ScreenState::Game;
     };
     let mut cancel = move || {
-        let _ = gs.write();
-        // game_state.write().show_settings = false;
+        game_state.write().screen_state = ScreenState::Game;
     };
 
     let mut onmounted = async move |e: Event<MountedData>| {
@@ -32,6 +33,30 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
         }
     };
 
+    let allow_undo_changed = move |evt: Event<FormData>| {
+        state.write().allow_undo = evt.checked();
+    };
+    let auto_play_changed = move |evt: Event<FormData>| {
+        state.write().auto_play = evt.checked();
+    };
+
+    let rank_skin_changed = move |evt: Event<FormData>| {
+        let v = evt.value().parse().ok().and_then(|v| { RankSkin::from_repr(v) });
+        state.write().skin.ranks = v.unwrap_or_default();
+    };
+    let suit_skin_changed = move |evt: Event<FormData>| {
+        let v = evt.value().parse().ok().and_then(|v| { SuitSkin::from_repr(v) });
+        state.write().skin.suits = v.unwrap_or_default();
+    };
+    let color_skin_changed = move |evt: Event<FormData>| {
+        let v = evt.value().parse().ok().and_then(|v| { ColorSkin::from_repr(v) });
+        state.write().skin.colors = v.unwrap_or_default();
+    };
+
+    let random_beak_changed = move |evt: Event<FormData>| {
+        state.write().random_beak = evt.checked();
+    };
+
     rsx! {
         div {
             id: "settingsDialog",
@@ -43,6 +68,8 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
                 "Allow undo/restart: "
                 input {
                     r#type: "checkbox",
+                    checked: state.read().allow_undo,
+                    onchange: allow_undo_changed,
                 }
             }
 
@@ -50,6 +77,8 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
                 "Auto-play to foundations: "
                 input {
                     r#type: "checkbox",
+                    checked: state.read().auto_play,
+                    onchange: auto_play_changed,
                 }
             }
 
@@ -62,9 +91,11 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
                 p {
                     "Ranks: "
                     select {
+                        onchange: rank_skin_changed,
                         for x in RankSkin::iter() {
                             option {
                                 value: x as usize,
+                                selected: state.read().skin.ranks == x,
                                 "{x}"
                             }
                         }
@@ -73,9 +104,11 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
                 p {
                     "Suits: "
                     select {
+                        onchange: suit_skin_changed,
                         for x in SuitSkin::iter() {
                             option {
                                 value: x as usize,
+                                selected: state.read().skin.suits == x,
                                 "{x}"
                             }
                         }
@@ -84,9 +117,11 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
                 p {
                     "Color scheme: "
                     select {
+                        onchange: color_skin_changed,
                         for x in ColorSkin::iter() {
                             option {
                                 value: x as usize,
+                                selected: state.read().skin.colors == x,
                                 "{x}"
                             }
                         }
@@ -100,6 +135,8 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
                     "Random beak: "
                     input {
                         r#type: "checkbox",
+                        checked: state.read().random_beak,
+                        onchange: random_beak_changed,
                     }
                 }
                 br {}

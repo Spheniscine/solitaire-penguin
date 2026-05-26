@@ -2,7 +2,7 @@ use async_std::stream::StreamExt;
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{BoardComponent, Settings, rem}, game::{ANIMATION_DURATION, AnimationKey, ColorSkin, GameState, RankSkin, Skin, SuitSkin}};
+use crate::{components::{BoardComponent, Settings, rem}, game::{ANIMATION_DURATION, AnimationKey, ColorSkin, GameState, RankSkin, ScreenState, Skin, SuitSkin}};
 
 #[component]
 pub fn Hero() -> Element {
@@ -37,7 +37,7 @@ pub fn Hero() -> Element {
         div {
             id: "hero",
             class: "select-none",
-            if false {
+            if st.screen_state == ScreenState::Game {
                 div {
                     position: "absolute",
                     border: "{rem(0.5)} solid #00B163",
@@ -64,6 +64,7 @@ pub fn Hero() -> Element {
                     width: rem(24.),
                     color: "#fff",
                     text_align: "center",
+                    onclick: move |_| if clean {state.write().screen_state = ScreenState::Settings;},
                     "Settings"
                 }
 

@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
-use strum_macros::{EnumIter, VariantArray};
+use strum_macros::{EnumIter, FromRepr, VariantArray};
 
 use crate::game::Suit;
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Debug, EnumIter, strum_macros::Display, Default)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Debug, EnumIter, strum_macros::Display, Default, FromRepr)]
 #[repr(u8)]
 pub enum RankSkin {
     #[default]
@@ -28,7 +28,7 @@ impl RankSkin {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Debug, EnumIter, strum_macros::Display, Default)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Debug, EnumIter, strum_macros::Display, Default, FromRepr)]
 #[repr(u8)]
 pub enum SuitSkin {
     #[default]
@@ -82,7 +82,7 @@ const COLOR_RED: &str = "#f00";
 const COLOR_BLUE: &str = "#00c";
 const COLOR_BLACK: &str = "#000";
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Debug, EnumIter, strum_macros::Display, Default)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Debug, EnumIter, strum_macros::Display, Default, FromRepr)]
 #[repr(u8)]
 pub enum ColorSkin {
     #[default]

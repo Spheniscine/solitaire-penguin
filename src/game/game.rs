@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_tuple::{Deserialize_tuple, Serialize_tuple};
 use strum::IntoEnumIterator;
 
-use crate::game::{Card, ColorSkin, DECK_SIZE, NUM_RANKS, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, RankSkin, Skin, Suit, SuitSkin};
+use crate::game::{Card, ColorSkin, DECK_SIZE, NUM_RANKS, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, RankSkin, SettingsState, Skin, Suit, SuitSkin};
 
 pub const NUM_FOUNDATIONS: usize = NUM_SUITS;
 pub const NUM_FREECELLS: usize = 7;
@@ -367,5 +367,21 @@ impl GameState {
             self.board.advance_actions(); // no animation, as repeated card moves on same card causes problems
             if !rec.auto { break; }
         }
+    }
+
+    pub fn new_settings_state(&self) -> SettingsState {
+        SettingsState {
+            allow_undo: self.allow_undo,
+            random_beak: self.random_beak,
+            auto_play: self.auto_play,
+            skin: self.skin,
+        }
+    }
+
+    pub fn apply_settings(&mut self, settings: &SettingsState){
+        self.allow_undo = settings.allow_undo;
+        self.random_beak = settings.random_beak;
+        self.auto_play = settings.auto_play;
+        self.skin = settings.skin;
     }
 }
