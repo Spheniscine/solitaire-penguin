@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_tuple::{Deserialize_tuple, Serialize_tuple};
 use strum::IntoEnumIterator;
 
-use crate::game::{Card, DECK_SIZE, NUM_RANKS, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, Suit};
+use crate::game::{Card, ColorSkin, DECK_SIZE, NUM_RANKS, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, RankSkin, Skin, Suit, SuitSkin};
 
 pub const NUM_FOUNDATIONS: usize = NUM_SUITS;
 pub const NUM_FREECELLS: usize = 7;
@@ -124,15 +124,25 @@ pub struct ActionRecord {
     pos1: BoardPos, pos2: BoardPos, auto: bool,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum ScreenState {
+    Game, Settings
+}
+
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct GameState {
     pub board: Board,
     pub deal: Vec<Card>,
-    pub random_beak: bool,
     pub animation_key: u16,
     pub history: Vec<ActionRecord>,
     pub already_won: bool,
     pub num_wins: i32,
+
+    pub screen_state: ScreenState,
+
+    pub random_beak: bool,
+    pub auto_play: bool,
+    pub skin: Skin,
 }
 
 impl GameState {
@@ -157,15 +167,25 @@ impl GameState {
         let random_beak = false;
         let deal = Self::new_deal(&mut rand::rng(), random_beak);
 
+        let skin = Skin { 
+            ranks: RankSkin::Numbers, 
+            suits: SuitSkin::Animals, 
+            colors: ColorSkin::FourColor,
+        };
+
         let res = Self {
             board: Board::from_deal(&deal),
             deal,
-            random_beak,
             animation_key: 0,
             history: vec![],
-
             num_wins: 0,
             already_won: false,
+
+            screen_state: ScreenState::Game,
+
+            random_beak,
+            auto_play: true,
+            skin,
         };
         //res.check_auto_moves();
 
@@ -231,6 +251,7 @@ impl GameState {
 
     pub fn check_auto_moves(&mut self) {
         if self.is_busy() { return; }
+        if !self.auto_play { return; }
 
         for depot in FREECELL_OFFSET .. NUM_DEPOTS {
             if let Some(_) = self.board.depots[depot].last() {

@@ -2,17 +2,10 @@ use async_std::stream::StreamExt;
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{BoardComponent, rem}, game::{ANIMATION_DURATION, AnimationKey, ColorSkin, GameState, RankSkin, Skin, SuitSkin}};
+use crate::{components::{BoardComponent, Settings, rem}, game::{ANIMATION_DURATION, AnimationKey, ColorSkin, GameState, RankSkin, Skin, SuitSkin}};
 
 #[component]
 pub fn Hero() -> Element {
-
-    let skin = Skin { 
-        ranks: RankSkin::Numbers, 
-        suits: SuitSkin::Animals, 
-        colors: ColorSkin::FourColor,
-    };
-
     let mut state = use_signal(|| {
         GameState::init()
     });
@@ -44,89 +37,95 @@ pub fn Hero() -> Element {
         div {
             id: "hero",
             class: "select-none",
+            if false {
+                div {
+                    position: "absolute",
+                    border: "{rem(0.5)} solid #00B163",
+                    border_radius: rem(1.),
+                    padding: rem(1.),
+                    top: rem(2.),
+                    left: rem(2.),
+                    font_size: rem(4.),
+                    width: rem(24.),
+                    color: "#fff",
+                    text_align: "center",
+                    onclick: move |_| if clean {state.write().new_game()},
+                    "New Game"
+                }
 
-            div {
-                position: "absolute",
-                border: "{rem(0.5)} solid #00B163",
-                border_radius: rem(1.),
-                padding: rem(1.),
-                top: rem(2.),
-                left: rem(2.),
-                font_size: rem(4.),
-                width: rem(24.),
-                color: "#fff",
-                text_align: "center",
-                onclick: move |_| if clean {state.write().new_game()},
-                "New Game"
-            }
+                div {
+                    position: "absolute",
+                    border: "{rem(0.5)} solid #00B163",
+                    border_radius: rem(1.),
+                    padding: rem(1.),
+                    top: rem(2.),
+                    right: rem(2.),
+                    font_size: rem(4.),
+                    width: rem(24.),
+                    color: "#fff",
+                    text_align: "center",
+                    "Settings"
+                }
 
-            div {
-                position: "absolute",
-                border: "{rem(0.5)} solid #00B163",
-                border_radius: rem(1.),
-                padding: rem(1.),
-                top: rem(2.),
-                right: rem(2.),
-                font_size: rem(4.),
-                width: rem(24.),
-                color: "#fff",
-                text_align: "center",
-                "Settings"
-            }
+                div {
+                    position: "absolute",
+                    border: "{rem(0.5)} solid #00B163",
+                    border_radius: rem(1.),
+                    padding: rem(1.),
+                    top: rem(2.),
+                    right: rem(30.),
+                    font_size: rem(4.),
+                    width: rem(24.),
+                    color: "#fff",
+                    text_align: "center",
+                    onclick: move |_| if clean {state.write().restart()},
+                    "Restart"
+                }
 
-            div {
-                position: "absolute",
-                border: "{rem(0.5)} solid #00B163",
-                border_radius: rem(1.),
-                padding: rem(1.),
-                top: rem(2.),
-                right: rem(30.),
-                font_size: rem(4.),
-                width: rem(24.),
-                color: "#fff",
-                text_align: "center",
-                onclick: move |_| if clean {state.write().restart()},
-                "Restart"
-            }
+                div {
+                    position: "absolute",
+                    border: "{rem(0.5)} solid #00B163",
+                    border_radius: rem(1.),
+                    padding: rem(1.),
+                    top: rem(11.),
+                    right: rem(2.),
+                    font_size: rem(4.),
+                    width: rem(24.),
+                    color: "#fff",
+                    text_align: "center",
+                    "Help"
+                }
 
-            div {
-                position: "absolute",
-                border: "{rem(0.5)} solid #00B163",
-                border_radius: rem(1.),
-                padding: rem(1.),
-                top: rem(11.),
-                right: rem(2.),
-                font_size: rem(4.),
-                width: rem(24.),
-                color: "#fff",
-                text_align: "center",
-                "Help"
-            }
+                div {
+                    position: "absolute",
+                    border: "{rem(0.5)} solid #00B163",
+                    border_radius: rem(1.),
+                    padding: rem(1.),
+                    top: rem(11.),
+                    right: rem(30.),
+                    font_size: rem(4.),
+                    width: rem(24.),
+                    color: "#fff",
+                    text_align: "center",
+                    onclick: move |_| if clean {state.write().undo()},
+                    "Undo"
+                }
 
-            div {
-                position: "absolute",
-                border: "{rem(0.5)} solid #00B163",
-                border_radius: rem(1.),
-                padding: rem(1.),
-                top: rem(11.),
-                right: rem(30.),
-                font_size: rem(4.),
-                width: rem(24.),
-                color: "#fff",
-                text_align: "center",
-                onclick: move |_| if clean {state.write().undo()},
-                "Undo"
-            }
-
-            BoardComponent { 
-                position: Vec2 { x: 0., y: 20. },
-                board: state.read().board.clone(),
-                skin,
-                onclick: move |pos| if clean {state.write().onclick(pos);},
-                ondoubleclick: move |pos| if clean {state.write().ondoubleclick(pos);},
-                animation_key: st.animation_key,
-                is_won: st.is_won(),
+                BoardComponent { 
+                    position: Vec2 { x: 0., y: 20. },
+                    board: st.board.clone(),
+                    skin: st.skin,
+                    onclick: move |pos| if clean {state.write().onclick(pos);},
+                    ondoubleclick: move |pos| if clean {state.write().ondoubleclick(pos);},
+                    animation_key: st.animation_key,
+                    is_won: st.is_won(),
+                }
+            } else {
+                Settings { 
+                    game_state: state,
+                }
             }
         }
     }
 }
+
