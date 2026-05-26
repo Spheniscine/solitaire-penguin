@@ -2,11 +2,16 @@ use async_std::stream::StreamExt;
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{BoardComponent, Settings, rem}, game::{ANIMATION_DURATION, AnimationKey, ColorSkin, GameState, RankSkin, ScreenState, Skin, SuitSkin}};
+use crate::{components::{BoardComponent, LocalStorage, Settings, rem}, game::{ANIMATION_DURATION, AnimationKey, ColorSkin, GameState, RankSkin, ScreenState, Skin, SuitSkin}};
 
 #[component]
 pub fn Hero() -> Element {
     let mut state = use_signal(|| {
+        if let Some(mut state) = LocalStorage.load_game_state() {
+            state.board.selected = None;
+            state.screen_state = ScreenState::Game;
+            return state;
+        }
         GameState::init()
     });
 
@@ -51,6 +56,17 @@ pub fn Hero() -> Element {
                     text_align: "center",
                     onclick: move |_| if clean {state.write().new_game()},
                     "New Game"
+                }
+
+                div {
+                    position: "absolute",
+                    padding: rem(1.),
+                    top: rem(11.),
+                    left: rem(2.),
+                    font_size: rem(4.),
+                    width: rem(24.),
+                    color: "#fff",
+                    "Wins: {st.num_wins}",
                 }
 
                 div {

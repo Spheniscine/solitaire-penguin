@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_tuple::{Deserialize_tuple, Serialize_tuple};
 use strum::IntoEnumIterator;
 
-use crate::game::{Card, ColorSkin, DECK_SIZE, NUM_RANKS, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, RankSkin, SettingsState, Skin, Suit, SuitSkin};
+use crate::{components::LocalStorage, game::{Card, ColorSkin, DECK_SIZE, NUM_RANKS, NUM_SUITS, RANK_MAX, RANK_MIN, RANKS, RankSkin, SettingsState, Skin, Suit, SuitSkin}};
 
 pub const NUM_FOUNDATIONS: usize = NUM_SUITS;
 pub const NUM_FREECELLS: usize = 7;
@@ -191,6 +191,7 @@ impl GameState {
         };
         //res.check_auto_moves();
 
+        LocalStorage.save_game_state(&res);
         res
     }
 
@@ -293,6 +294,7 @@ impl GameState {
         if self.history.is_empty() || !self.undo_possible() { return; }
         self.board = Board::from_deal(&self.deal);
         self.history.clear();
+        LocalStorage.save_game_state(&self);
     }
 
     pub fn new_game(&mut self) {
@@ -301,6 +303,7 @@ impl GameState {
         self.deal = deal;
         self.history.clear();
         self.already_won = false;
+        LocalStorage.save_game_state(&self);
     }
 
     pub fn onclick(&mut self, pos: BoardPos) {
@@ -344,6 +347,7 @@ impl GameState {
     pub fn advance_animations(&mut self, key: AnimationKey) {
         if key != self.animation_key { return; }
         self.animation_key = self.animation_key.wrapping_add(1);
+        
         self.board.advance_actions();
 
         if self.is_won() {
@@ -351,9 +355,11 @@ impl GameState {
                 self.num_wins += 1;
                 self.already_won = true;
             }
-            return;
+        } else {
+            self.check_auto_moves();
         }
-        self.check_auto_moves();
+
+        if !self.is_busy() { LocalStorage.save_game_state(&self); }
     }
 
     pub fn undo_possible(&mut self) -> bool {
@@ -367,6 +373,7 @@ impl GameState {
             self.board.advance_actions(); // no animation, as repeated card moves on same card causes problems
             if !rec.auto { break; }
         }
+        LocalStorage.save_game_state(&self);
     }
 
     pub fn new_settings_state(&self) -> SettingsState {
@@ -383,5 +390,6 @@ impl GameState {
         self.random_beak = settings.random_beak;
         self.auto_play = settings.auto_play;
         self.skin = settings.skin;
+        LocalStorage.save_game_state(&self);
     }
 }
