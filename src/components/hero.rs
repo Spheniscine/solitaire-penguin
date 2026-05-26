@@ -2,7 +2,7 @@ use async_std::stream::StreamExt;
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{BoardComponent, LocalStorage, Settings, rem}, game::{ANIMATION_DURATION, AnimationKey, ColorSkin, GameState, RankSkin, ScreenState, Skin, SuitSkin}};
+use crate::{components::{BoardComponent, LocalStorage, Settings, rem}, game::{ANIMATION_DURATION, AnimationKey, GameState, ScreenState}};
 
 #[component]
 pub fn Hero() -> Element {

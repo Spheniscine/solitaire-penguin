@@ -141,7 +141,7 @@ pub struct GameState {
     pub screen_state: ScreenState,
 
     pub allow_undo: bool,
-    pub random_beak: bool,
+    // pub random_beak: bool, // Remove fixed-beak option (issue #1)
     pub auto_play: bool,
     pub skin: Skin,
 }
@@ -165,7 +165,7 @@ impl GameState {
         deck
     }
     pub fn init() -> Self {
-        let random_beak = false;
+        let random_beak = true;
         let deal = Self::new_deal(&mut rand::rng(), random_beak);
 
         let skin = Skin { 
@@ -185,7 +185,7 @@ impl GameState {
             screen_state: ScreenState::Game,
 
             allow_undo: true,
-            random_beak,
+            // random_beak,
             auto_play: true,
             skin,
         };
@@ -298,7 +298,7 @@ impl GameState {
     }
 
     pub fn new_game(&mut self) {
-        let deal = Self::new_deal(&mut rand::rng(), self.random_beak);
+        let deal = Self::new_deal(&mut rand::rng(), true);
         self.board = Board::from_deal(&deal);
         self.deal = deal;
         self.history.clear();
@@ -379,7 +379,7 @@ impl GameState {
     pub fn new_settings_state(&self) -> SettingsState {
         SettingsState {
             allow_undo: self.allow_undo,
-            random_beak: self.random_beak,
+            // random_beak: self.random_beak,
             auto_play: self.auto_play,
             skin: self.skin,
         }
@@ -387,7 +387,7 @@ impl GameState {
 
     pub fn apply_settings(&mut self, settings: &SettingsState){
         self.allow_undo = settings.allow_undo;
-        self.random_beak = settings.random_beak;
+        // self.random_beak = settings.random_beak;
         self.auto_play = settings.auto_play;
         self.skin = settings.skin;
         LocalStorage.save_game_state(&self);

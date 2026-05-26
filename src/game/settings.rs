@@ -5,7 +5,7 @@ use crate::game::Skin;
 #[derive(Clone, Serialize, Deserialize)]
 pub struct SettingsState {
     pub allow_undo: bool,
-    pub random_beak: bool,
+    // pub random_beak: bool,
     pub auto_play: bool,
     pub skin: Skin,
 }

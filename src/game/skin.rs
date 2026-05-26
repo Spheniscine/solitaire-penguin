@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use strum_macros::{EnumIter, FromRepr, VariantArray};
+use strum_macros::{EnumIter, FromRepr};
 
 use crate::game::Suit;
 

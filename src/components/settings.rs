@@ -17,10 +17,10 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
         game_state.write().screen_state = ScreenState::Game;
     };
 
-    let mut onmounted = async move |e: Event<MountedData>| {
-        e.set_focus(true).await;
+    let onmounted = async move |e: Event<MountedData>| {
+        let _ = e.set_focus(true).await;
     };
-    let mut onkeydown = move |e: Event<KeyboardData>| {
+    let onkeydown = move |e: Event<KeyboardData>| {
         let key = e.key();
         match key {
             Key::Enter => {
@@ -53,9 +53,9 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
         state.write().skin.colors = v.unwrap_or_default();
     };
 
-    let random_beak_changed = move |evt: Event<FormData>| {
-        state.write().random_beak = evt.checked();
-    };
+    // let random_beak_changed = move |evt: Event<FormData>| {
+    //     state.write().random_beak = evt.checked();
+    // };
 
     rsx! {
         div {
@@ -129,22 +129,22 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
                 }
             }
 
-            p {
-                line_height: 1,
-                span {
-                    "Random beak: "
-                    input {
-                        r#type: "checkbox",
-                        checked: state.read().random_beak,
-                        onchange: random_beak_changed,
-                    }
-                }
-                br {}
-                span {
-                    style: "font-size: 3.5rem; line-height: 2rem;",
-                    "(does not apply until a new game is started)"
-                }
-            }
+            // p {
+            //     line_height: 1,
+            //     span {
+            //         "Random beak: "
+            //         input {
+            //             r#type: "checkbox",
+            //             checked: state.read().random_beak,
+            //             onchange: random_beak_changed,
+            //         }
+            //     }
+            //     br {}
+            //     span {
+            //         style: "font-size: 3.5rem; line-height: 2rem;",
+            //         "(does not apply until a new game is started)"
+            //     }
+            // }
 
             p {
                 button {
