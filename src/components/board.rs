@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{CARD_HEIGHT_RATIO, CardComponent, CardFrame, Movement, SkinTrait, rem}, game::{AnimationAct, AnimationKey, Board, BoardPos, Card, DepotIndex, DepotRole, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, NUM_TABLEAU_DEPOTS, Skin, Suit}};
+use crate::{components::{CARD_BORDER_RADIUS_RATIO, CARD_HEIGHT_RATIO, CardComponent, CardFrame, Movement, SkinTrait, rem}, game::{AnimationAct, AnimationKey, Board, BoardPos, Card, DepotIndex, DepotRole, NUM_DEPOTS, NUM_FOUNDATIONS, NUM_FREECELLS, NUM_TABLEAU_DEPOTS, Skin, Suit}};
 
 
 #[component]
@@ -131,7 +131,7 @@ pub fn BoardComponent(
                             width: rem(card_width),
                             height: rem(selected_height),
                             background_color: "#ff0",
-                            border_radius: rem(card_width * (1.5 / 12.)),
+                            border_radius: rem(card_width * CARD_BORDER_RADIUS_RATIO),
                             class: "selected-halo",
                         }
                     }

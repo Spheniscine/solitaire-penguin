@@ -10,6 +10,7 @@ pub trait SkinTrait<C>: PartialEq + Clone {
 }
 
 pub const CARD_HEIGHT_RATIO: f32 = 13. / 12.;
+pub const CARD_BORDER_RADIUS_RATIO: f32 = 1.5 / 12.;
 
 #[component]
 pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
@@ -37,7 +38,7 @@ pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
             width: pt(11.),
             height: pt(12.),
             border: "{pt(0.25)} solid #000",
-            border_radius: pt(1.5),
+            border_radius: rem(width * CARD_BORDER_RADIUS_RATIO),
             display: "grid",
             grid_template_columns: "50% 50%",
             grid_template_rows: "50% 50%",
