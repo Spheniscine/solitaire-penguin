@@ -362,7 +362,7 @@ impl GameState {
         if !self.is_busy() { LocalStorage.save_game_state(&self); }
     }
 
-    pub fn undo_possible(&mut self) -> bool {
+    pub fn undo_possible(&self) -> bool {
         self.allow_undo && !self.history.is_empty()
     }
 

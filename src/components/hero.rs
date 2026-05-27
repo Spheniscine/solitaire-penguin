@@ -45,15 +45,9 @@ pub fn Hero() -> Element {
             if st.screen_state == ScreenState::Game {
                 div {
                     position: "absolute",
-                    border: "{rem(0.5)} solid #00B163",
-                    border_radius: rem(1.),
-                    padding: rem(1.),
                     top: rem(2.),
                     left: rem(2.),
-                    font_size: rem(4.),
-                    width: rem(24.),
-                    color: "#fff",
-                    text_align: "center",
+                    class: "game-button",
                     onclick: move |_| if clean {state.write().new_game()},
                     "New Game"
                 }
@@ -61,69 +55,48 @@ pub fn Hero() -> Element {
                 div {
                     position: "absolute",
                     padding: rem(1.),
-                    top: rem(11.),
+                    top: rem(10.),
                     left: rem(2.),
                     font_size: rem(4.),
-                    width: rem(24.),
+                    width: rem(48.),
                     color: "#fff",
+
+                    "Penguin (Original)",
+                    br {},
                     "Wins: {st.num_wins}",
                 }
 
                 div {
                     position: "absolute",
-                    border: "{rem(0.5)} solid #00B163",
-                    border_radius: rem(1.),
-                    padding: rem(1.),
                     top: rem(2.),
                     right: rem(2.),
-                    font_size: rem(4.),
-                    width: rem(24.),
-                    color: "#fff",
-                    text_align: "center",
+                    class: "game-button",
                     onclick: move |_| if clean {state.write().screen_state = ScreenState::Settings;},
                     "Settings"
                 }
 
                 div {
                     position: "absolute",
-                    border: "{rem(0.5)} solid #00B163",
-                    border_radius: rem(1.),
-                    padding: rem(1.),
                     top: rem(2.),
                     right: rem(30.),
-                    font_size: rem(4.),
-                    width: rem(24.),
-                    color: "#fff",
-                    text_align: "center",
+                    class: if st.undo_possible() {"game-button"} else {"game-button-disabled"},
                     onclick: move |_| if clean {state.write().restart()},
                     "Restart"
                 }
 
                 div {
                     position: "absolute",
-                    border: "{rem(0.5)} solid #00B163",
-                    border_radius: rem(1.),
-                    padding: rem(1.),
                     top: rem(11.),
                     right: rem(2.),
-                    font_size: rem(4.),
-                    width: rem(24.),
-                    color: "#fff",
-                    text_align: "center",
+                    class: "game-button",
                     "Help"
                 }
 
                 div {
                     position: "absolute",
-                    border: "{rem(0.5)} solid #00B163",
-                    border_radius: rem(1.),
-                    padding: rem(1.),
                     top: rem(11.),
                     right: rem(30.),
-                    font_size: rem(4.),
-                    width: rem(24.),
-                    color: "#fff",
-                    text_align: "center",
+                    class: if st.undo_possible() {"game-button"} else {"game-button-disabled"},
                     onclick: move |_| if clean {state.write().undo()},
                     "Undo"
                 }

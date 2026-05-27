@@ -114,6 +114,28 @@ body {
     font-size: 3rem;
 }
 
+.game-button {
+    position: absolute; 
+    color: #fff; 
+    text-align: center; 
+    border: 0.5rem solid #00B163; 
+    border-radius: 1rem; 
+    padding: 1rem; 
+    font-size: 4rem; 
+    width: 24rem;
+}
+
+.game-button-disabled {
+    color: #999; 
+    background-color: #777;
+    text-align: center; 
+    border: 0.5rem solid #00B163; 
+    border-radius: 1rem; 
+    padding: 1rem; 
+    font-size: 4rem; 
+    width: 24rem;
+}
+
 /* .card-pattern-1 {
     --card-width: 11rem;
     --s: calc(var(--card-width) / 1.3);
