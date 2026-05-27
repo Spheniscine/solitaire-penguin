@@ -5,7 +5,7 @@ use crate::game::{ColorSkin, GameState, RankSkin, ScreenState, SuitSkin};
 
 #[component]
 pub fn Settings(game_state: Signal<GameState>) -> Element {
-    let mut game_state = game_state;
+    let mut game_state = game_state; // needed to satisfy borrow checker for use in closures
     let mut state = use_signal(|| {
         game_state.read().new_settings_state()
     });
