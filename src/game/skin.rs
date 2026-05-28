@@ -69,7 +69,7 @@ impl SuitSkin {
 
     pub fn font(self) -> &'static str {
         match self {
-            SuitSkin::Animals => "'Noto Color Emoji'",
+            SuitSkin::Animals => "'Noto Color Emoji', 'Apple Color Emoji'",
             SuitSkin::Shapes => "'Noto Sans Symbols 2'",
             SuitSkin::Traditional => "KaTeX_Main", // links to custom version of Katex/MLModern that has filled card suits
         }
