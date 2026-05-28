@@ -103,7 +103,7 @@ body {
     width: 4rem; 
     height: 4rem;
 }
-#settingsDialog button {
+button {
     width: 20rem; 
     font-size: 5rem; 
     font-family: 'Noto Sans', sans-serif;

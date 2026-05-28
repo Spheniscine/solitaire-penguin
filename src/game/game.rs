@@ -65,24 +65,55 @@ pub struct Board {
     pub animation_acts: Vec<AnimationAct>,
 }
 
-pub fn rank_under(rank: u8) -> u8 {
-    if rank == RANK_MIN { RANK_MAX } else { rank - 1 }
+pub fn rank_under_wrap(rank: u8) -> u8 {
+    rank_under_with_variant(rank, GameVariant::Original)
+}
+
+pub fn rank_under_with_variant(rank: u8, variant: GameVariant) -> u8 {
+    if variant == GameVariant::Original && rank == RANK_MIN { RANK_MAX } else { rank - 1 }
 }
 
 impl Board {
-    pub fn from_deal(deal: &Vec<Card>) -> Self {
+    pub fn empty() -> Self {
+        Self {
+            depots: vec![],
+            beak: Card { rank: 1, suit: Suit::Spades },
+            selected: None,
+            animation_acts: vec![],
+        }
+    }
+
+    pub fn from_deal(deal: &[Card], variant: GameVariant) -> Self {
         assert_eq!(deal.len(), DECK_SIZE);
         let mut depots = vec![vec![]; NUM_DEPOTS];
-        let mut column_ite = std::iter::repeat(TABLEAU_COLUMNS).flatten();
-        let mut foundation_ite = FOUNDATIONS;
+        let beak = if variant == GameVariant::Original {deal[0]} else {Card { rank: 1, suit: Suit::Spades }};
 
-        let beak = deal[0];
-        for &card in deal {
-            if card != beak && card.rank == beak.rank {
-                depots[foundation_ite.next().unwrap()].push(card);
-            } else {
-                depots[column_ite.next().unwrap()].push(card);
-            }
+        match variant {
+            GameVariant::Tuxedo => {
+                let mut deal = deal;
+                for _ in 0..7 {
+                    for i in TABLEAU_COLUMNS {
+                        let card = *deal.split_off_last().unwrap();
+                        depots[i].push(card);
+                    }
+                }
+                for i in [0, 3, 6] {
+                    let card = *deal.split_off_last().unwrap();
+                    depots[TABLEAU_OFFSET + i].push(card);
+                }
+            },
+            GameVariant::Original => {
+                let mut column_ite = std::iter::repeat(TABLEAU_COLUMNS).flatten();
+                let mut foundation_ite = FOUNDATIONS;
+
+                for &card in deal {
+                    if card != beak && card.rank == beak.rank {
+                        depots[foundation_ite.next().unwrap()].push(card);
+                    } else {
+                        depots[column_ite.next().unwrap()].push(card);
+                    }
+                }
+            },
         }
 
         Board {
@@ -95,7 +126,7 @@ impl Board {
     }
 
     pub fn tableau_head_rank(&self) -> u8 {
-        rank_under(self.foundation_rank())
+        rank_under_wrap(self.foundation_rank())
     }
 
     pub fn do_move(&mut self, pos1: BoardPos, pos2: BoardPos) {
@@ -126,19 +157,30 @@ pub struct ActionRecord {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ScreenState {
-    Game, Settings
+    Game, Settings, NewGame,
+}
+
+#[derive(Copy, Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default, strum_macros::Display)]
+pub enum GameVariant {
+    Tuxedo, 
+    #[default] Original // default to be backward compatible with saves
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct GameState {
     pub board: Board,
     pub deal: Vec<Card>,
-    pub animation_key: u16,
+    #[serde(skip)]
+    pub animation_key: AnimationKey, // used for syncing and to provide animator components with cycling keys
     pub history: Vec<ActionRecord>,
     pub already_won: bool,
     pub num_wins: i32,
 
+    #[serde(default)]
+    pub variant: GameVariant,
     pub screen_state: ScreenState,
+    #[serde(skip)]
+    pub new_player: bool,
 
     pub allow_undo: bool,
     // pub random_beak: bool, // Remove fixed-beak option (issue #1)
@@ -167,6 +209,7 @@ impl GameState {
     pub fn init() -> Self {
         let random_beak = true;
         let deal = Self::new_deal(&mut rand::rng(), random_beak);
+        let variant = GameVariant::Tuxedo;
 
         let skin = Skin { 
             ranks: RankSkin::Numbers, 
@@ -175,32 +218,31 @@ impl GameState {
         };
 
         let res = Self {
-            board: Board::from_deal(&deal),
+            board: Board::empty(),
             deal,
             animation_key: 0,
             history: vec![],
             num_wins: 0,
             already_won: false,
 
-            screen_state: ScreenState::Game,
+            variant,
+            screen_state: ScreenState::NewGame,
+            new_player: true,
 
             allow_undo: true,
-            // random_beak,
             auto_play: true,
             skin,
         };
-        //res.check_auto_moves();
 
-        LocalStorage.save_game_state(&res);
         res
     }
 
     pub fn can_stack(&self, back: Card, front: Card) -> bool {
-        back.suit == front.suit && front.rank == rank_under(back.rank)
+        back.suit == front.suit && front.rank == rank_under_with_variant(back.rank, self.variant)
     }
 
     pub fn can_sort(&self, back: Card, front: Card) -> bool {
-        back.suit == front.suit && back.rank == rank_under(front.rank)
+        back.suit == front.suit && back.rank == rank_under_with_variant(front.rank, self.variant)
     }
 
     pub fn can_select(&mut self, pos: BoardPos) -> bool {
@@ -292,17 +334,24 @@ impl GameState {
 
     pub fn restart(&mut self) {
         if self.history.is_empty() || !self.undo_possible() { return; }
-        self.board = Board::from_deal(&self.deal);
+        self.board = Board::from_deal(&self.deal, self.variant);
         self.history.clear();
         LocalStorage.save_game_state(&self);
     }
 
     pub fn new_game(&mut self) {
+        self.screen_state = ScreenState::NewGame;
+    }
+
+    pub fn new_game_with_variant(&mut self, variant: GameVariant) {
         let deal = Self::new_deal(&mut rand::rng(), true);
-        self.board = Board::from_deal(&deal);
+        self.board = Board::from_deal(&deal, variant);
+        self.variant = variant;
         self.deal = deal;
         self.history.clear();
         self.already_won = false;
+        self.new_player = false;
+        self.screen_state = ScreenState::Game;
         LocalStorage.save_game_state(&self);
     }
 
@@ -379,7 +428,6 @@ impl GameState {
     pub fn new_settings_state(&self) -> SettingsState {
         SettingsState {
             allow_undo: self.allow_undo,
-            // random_beak: self.random_beak,
             auto_play: self.auto_play,
             skin: self.skin,
         }
@@ -387,7 +435,6 @@ impl GameState {
 
     pub fn apply_settings(&mut self, settings: &SettingsState){
         self.allow_undo = settings.allow_undo;
-        // self.random_beak = settings.random_beak;
         self.auto_play = settings.auto_play;
         self.skin = settings.skin;
         LocalStorage.save_game_state(&self);
