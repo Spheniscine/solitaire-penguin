@@ -65,8 +65,12 @@ pub struct Board {
     pub animation_acts: Vec<AnimationAct>,
 }
 
-pub fn rank_under(rank: u8) -> u8 {
-    if rank == RANK_MIN { RANK_MAX } else { rank - 1 }
+pub fn rank_under_wrap(rank: u8) -> u8 {
+    rank_under_with_variant(rank, GameVariant::Original)
+}
+
+pub fn rank_under_with_variant(rank: u8, variant: GameVariant) -> u8 {
+    if variant == GameVariant::Original && rank == RANK_MIN { RANK_MAX } else { rank - 1 }
 }
 
 impl Board {
@@ -79,19 +83,37 @@ impl Board {
         }
     }
 
-    pub fn from_deal(deal: &Vec<Card>) -> Self {
+    pub fn from_deal(deal: &[Card], variant: GameVariant) -> Self {
         assert_eq!(deal.len(), DECK_SIZE);
         let mut depots = vec![vec![]; NUM_DEPOTS];
-        let mut column_ite = std::iter::repeat(TABLEAU_COLUMNS).flatten();
-        let mut foundation_ite = FOUNDATIONS;
+        let beak = if variant == GameVariant::Original {deal[0]} else {Card { rank: 1, suit: Suit::Spades }};
 
-        let beak = deal[0];
-        for &card in deal {
-            if card != beak && card.rank == beak.rank {
-                depots[foundation_ite.next().unwrap()].push(card);
-            } else {
-                depots[column_ite.next().unwrap()].push(card);
-            }
+        match variant {
+            GameVariant::Tuxedo => {
+                let mut deal = deal;
+                for _ in 0..7 {
+                    for i in TABLEAU_COLUMNS {
+                        let card = *deal.split_off_last().unwrap();
+                        depots[i].push(card);
+                    }
+                }
+                for i in [0, 3, 6] {
+                    let card = *deal.split_off_last().unwrap();
+                    depots[TABLEAU_OFFSET + i].push(card);
+                }
+            },
+            GameVariant::Original => {
+                let mut column_ite = std::iter::repeat(TABLEAU_COLUMNS).flatten();
+                let mut foundation_ite = FOUNDATIONS;
+
+                for &card in deal {
+                    if card != beak && card.rank == beak.rank {
+                        depots[foundation_ite.next().unwrap()].push(card);
+                    } else {
+                        depots[column_ite.next().unwrap()].push(card);
+                    }
+                }
+            },
         }
 
         Board {
@@ -104,7 +126,7 @@ impl Board {
     }
 
     pub fn tableau_head_rank(&self) -> u8 {
-        rank_under(self.foundation_rank())
+        rank_under_wrap(self.foundation_rank())
     }
 
     pub fn do_move(&mut self, pos1: BoardPos, pos2: BoardPos) {
@@ -135,12 +157,13 @@ pub struct ActionRecord {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ScreenState {
-    Game, Settings
+    Game, Settings, NewGame,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default, strum_macros::Display)]
+#[derive(Copy, Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default, strum_macros::Display)]
 pub enum GameVariant {
-    Tuxedo, #[default] Original
+    Tuxedo, 
+    #[default] Original // default to be backward compatible with saves
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
@@ -184,6 +207,7 @@ impl GameState {
     pub fn init() -> Self {
         let random_beak = true;
         let deal = Self::new_deal(&mut rand::rng(), random_beak);
+        let variant = GameVariant::Tuxedo;
 
         let skin = Skin { 
             ranks: RankSkin::Numbers, 
@@ -192,14 +216,14 @@ impl GameState {
         };
 
         let res = Self {
-            board: Board::from_deal(&deal),
+            board: Board::from_deal(&deal, variant),
             deal,
             animation_key: 0,
             history: vec![],
             num_wins: 0,
             already_won: false,
 
-            variant: GameVariant::Original,
+            variant,
             screen_state: ScreenState::Game,
 
             allow_undo: true,
@@ -214,11 +238,11 @@ impl GameState {
     }
 
     pub fn can_stack(&self, back: Card, front: Card) -> bool {
-        back.suit == front.suit && front.rank == rank_under(back.rank)
+        back.suit == front.suit && front.rank == rank_under_with_variant(back.rank, self.variant)
     }
 
     pub fn can_sort(&self, back: Card, front: Card) -> bool {
-        back.suit == front.suit && back.rank == rank_under(front.rank)
+        back.suit == front.suit && back.rank == rank_under_with_variant(front.rank, self.variant)
     }
 
     pub fn can_select(&mut self, pos: BoardPos) -> bool {
@@ -310,14 +334,14 @@ impl GameState {
 
     pub fn restart(&mut self) {
         if self.history.is_empty() || !self.undo_possible() { return; }
-        self.board = Board::from_deal(&self.deal);
+        self.board = Board::from_deal(&self.deal, self.variant);
         self.history.clear();
         LocalStorage.save_game_state(&self);
     }
 
     pub fn new_game(&mut self) {
         let deal = Self::new_deal(&mut rand::rng(), true);
-        self.board = Board::from_deal(&deal);
+        self.board = Board::from_deal(&deal, self.variant);
         self.deal = deal;
         self.history.clear();
         self.already_won = false;
