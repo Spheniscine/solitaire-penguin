@@ -61,7 +61,7 @@ pub fn Hero() -> Element {
                     width: rem(48.),
                     color: "#fff",
 
-                    "Penguin (Original)",
+                    "Penguin ({st.variant})",
                     br {},
                     "Wins: {st.num_wins}",
                 }

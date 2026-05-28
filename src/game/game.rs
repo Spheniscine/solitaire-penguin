@@ -70,6 +70,15 @@ pub fn rank_under(rank: u8) -> u8 {
 }
 
 impl Board {
+    pub fn empty() -> Self {
+        Self {
+            depots: vec![],
+            beak: Card { rank: 1, suit: Suit::Spades },
+            selected: None,
+            animation_acts: vec![],
+        }
+    }
+
     pub fn from_deal(deal: &Vec<Card>) -> Self {
         assert_eq!(deal.len(), DECK_SIZE);
         let mut depots = vec![vec![]; NUM_DEPOTS];
@@ -129,15 +138,23 @@ pub enum ScreenState {
     Game, Settings
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default, strum_macros::Display)]
+pub enum GameVariant {
+    Tuxedo, #[default] Original
+}
+
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct GameState {
     pub board: Board,
     pub deal: Vec<Card>,
-    pub animation_key: u16,
+    #[serde(skip)]
+    pub animation_key: AnimationKey, // used for syncing and to provide animator components with cycling keys
     pub history: Vec<ActionRecord>,
     pub already_won: bool,
     pub num_wins: i32,
 
+    #[serde(default)]
+    pub variant: GameVariant,
     pub screen_state: ScreenState,
 
     pub allow_undo: bool,
@@ -182,6 +199,7 @@ impl GameState {
             num_wins: 0,
             already_won: false,
 
+            variant: GameVariant::Original,
             screen_state: ScreenState::Game,
 
             allow_undo: true,
