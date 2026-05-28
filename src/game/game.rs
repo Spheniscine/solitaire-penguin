@@ -179,6 +179,8 @@ pub struct GameState {
     #[serde(default)]
     pub variant: GameVariant,
     pub screen_state: ScreenState,
+    #[serde(skip)]
+    pub new_player: bool,
 
     pub allow_undo: bool,
     // pub random_beak: bool, // Remove fixed-beak option (issue #1)
@@ -216,7 +218,7 @@ impl GameState {
         };
 
         let res = Self {
-            board: Board::from_deal(&deal, variant),
+            board: Board::empty(),
             deal,
             animation_key: 0,
             history: vec![],
@@ -224,16 +226,14 @@ impl GameState {
             already_won: false,
 
             variant,
-            screen_state: ScreenState::Game,
+            screen_state: ScreenState::NewGame,
+            new_player: true,
 
             allow_undo: true,
-            // random_beak,
             auto_play: true,
             skin,
         };
-        //res.check_auto_moves();
 
-        LocalStorage.save_game_state(&res);
         res
     }
 
@@ -340,11 +340,18 @@ impl GameState {
     }
 
     pub fn new_game(&mut self) {
+        self.screen_state = ScreenState::NewGame;
+    }
+
+    pub fn new_game_with_variant(&mut self, variant: GameVariant) {
         let deal = Self::new_deal(&mut rand::rng(), true);
-        self.board = Board::from_deal(&deal, self.variant);
+        self.board = Board::from_deal(&deal, variant);
+        self.variant = variant;
         self.deal = deal;
         self.history.clear();
         self.already_won = false;
+        self.new_player = false;
+        self.screen_state = ScreenState::Game;
         LocalStorage.save_game_state(&self);
     }
 
@@ -421,7 +428,6 @@ impl GameState {
     pub fn new_settings_state(&self) -> SettingsState {
         SettingsState {
             allow_undo: self.allow_undo,
-            // random_beak: self.random_beak,
             auto_play: self.auto_play,
             skin: self.skin,
         }
@@ -429,7 +435,6 @@ impl GameState {
 
     pub fn apply_settings(&mut self, settings: &SettingsState){
         self.allow_undo = settings.allow_undo;
-        // self.random_beak = settings.random_beak;
         self.auto_play = settings.auto_play;
         self.skin = settings.skin;
         LocalStorage.save_game_state(&self);

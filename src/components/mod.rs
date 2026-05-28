@@ -19,5 +19,8 @@ pub use hero::*;
 mod settings;
 pub use settings::*;
 
+mod new_game;
+pub use new_game::*;
+
 mod local_storage;
 pub use local_storage::LocalStorage;
