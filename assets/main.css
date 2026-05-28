@@ -136,6 +136,20 @@ button {
     width: 24rem;
 }
 
+@font-face {
+    font-family: "Noto Color Emoji";
+    font-style: normal;
+    font-weight: 700;
+    src: url(https://spheniscine.github.io/assets/NotoColorEmoji.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: KaTeX_Main;
+    font-style: normal;
+    font-weight: 700;
+    src: url(https://spheniscine.github.io/assets/KaTeX_Suits.woff2) format("woff2");
+}
+
 /* .card-pattern-1 {
     --card-width: 11rem;
     --s: calc(var(--card-width) / 1.3);

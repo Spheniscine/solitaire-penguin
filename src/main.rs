@@ -8,7 +8,7 @@ mod components;
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 
 // altered version of KaTeX_Main to include filled "red" suits
-const KATEX_SUITS: Asset = asset!("/assets/KaTeX_Suits.woff2");
+// const KATEX_SUITS: Asset = asset!("/assets/KaTeX_Suits.woff2");
 
 // from https://www.confettijs.org/
 const CONFETTI_JS: Asset = asset!("/assets/confetti.min.js");
@@ -34,21 +34,21 @@ fn App() -> Element {
             crossorigin: "anonymous",
         }
         document::Link {
-            href: "https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Noto+Sans+Symbols+2&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap",
+            href: "https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap",
             rel: "stylesheet",
         }
         document::Link { rel: "icon", href: FAVICON }
         document::Style {{MAIN_CSS}}
-        document::Style {
-            r#"
-            @font-face {{
-                font-family: KaTeX_Main;
-                font-style: normal;
-                font-weight: 700;
-                src: url({KATEX_SUITS}) format("woff2");
-            }}
-            "#,
-        }
+        // document::Style {
+        //     r#"
+        //     @font-face {{
+        //         font-family: KaTeX_Main;
+        //         font-style: normal;
+        //         font-weight: 700;
+        //         src: url({KATEX_SUITS}) format("woff2");
+        //     }}
+        //     "#,
+        // }
         document::Script { src: CONFETTI_JS }
         Hero {}
 
