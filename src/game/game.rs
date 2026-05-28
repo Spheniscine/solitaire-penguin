@@ -381,6 +381,7 @@ impl GameState {
 
     pub fn ondoubleclick(&mut self, pos: BoardPos) {
         if self.is_busy() { return; }
+        if !self.can_select(pos) { return; } // needed, or illegal stacks can still be moved this way!
         let depot = pos.depot_index;
         if DepotIndex(depot).role() == DepotRole::Foundation { return; }
         for dest in [FOUNDATIONS, TABLEAU_COLUMNS, FREECELLS].into_iter().flatten() {
