@@ -3635,6 +3635,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rand_xorshift"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "60aa6af80be32871323012e02e6e65f8a7cc7890931ae421d217ad8fe0df2ccf"
+dependencies = [
+ "rand_core 0.10.1",
+]
+
+[[package]]
 name = "raw-window-handle"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4154,6 +4163,8 @@ dependencies = [
  "glam",
  "phf 0.13.1",
  "rand 0.10.1",
+ "rand_core 0.10.1",
+ "rand_xorshift",
  "serde",
  "serde_json5",
  "serde_tuple",

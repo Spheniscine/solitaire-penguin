@@ -14,6 +14,8 @@ getrandom = { version = "0.4.2", features = ["wasm_js"] }
 glam = "0.32.1"
 phf = { version = "0.13.1", features = ["macros"] }
 rand = "0.10.1"
+rand_core = "0.10.1"
+rand_xorshift = "0.5.0"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json5 = "0.2.1"
 serde_tuple = "1.1.3"
