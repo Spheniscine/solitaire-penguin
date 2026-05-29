@@ -167,3 +167,12 @@ button {
     background: radial-gradient(50% 50% at 100% 0,var(--_g)),radial-gradient(50% 50% at 0 100%,var(--_g)),radial-gradient(50% 50% at center,var(--_g)),radial-gradient(50% 50% at center,var(--_g)) calc(var(--s)/2) calc(var(--s)/2) var(--c1);
     background-size: var(--s) var(--s)
 } */
+
+#preloaded-images {
+   position: absolute;
+   overflow: hidden;
+   left: -9999rem; 
+   top: -9999rem;
+   height: 1px;
+   width: 1px;
+}

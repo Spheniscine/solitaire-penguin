@@ -2,7 +2,7 @@ use async_std::stream::StreamExt;
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{BoardComponent, LocalStorage, NewGame, Settings, rem}, game::{ANIMATION_DURATION, AnimationKey, GameState, ScreenState}};
+use crate::{components::{BoardComponent, EMOJI_MAP, LocalStorage, NewGame, Settings, rem}, game::{ANIMATION_DURATION, AnimationKey, GameState, ScreenState}};
 
 #[component]
 pub fn Hero() -> Element {
@@ -119,6 +119,18 @@ pub fn Hero() -> Element {
                     game_state: state,
                 }
             }
+
+            div {
+                id: "preloaded-images",
+
+                for asset in EMOJI_MAP.values() {
+                    img {
+                        src: *asset,
+                        width: 1,
+                        height: 1,
+                    }
+                }
+            },
         }
     }
 }

@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{components::SkinTrait, game::{Card, Skin, Suit, SuitSkin}};
+use crate::{components::{Emoji, SkinTrait}, game::{Card, Skin, Suit, SuitSkin}};
 
 
 impl SkinTrait<Card> for Skin {
@@ -19,17 +19,9 @@ impl SkinTrait<Card> for Skin {
 
     fn render_suit(&self, card: &Card) -> Element {
         if self.suits == SuitSkin::Animals {
-            let asset = match card.suit {
-                Suit::Clubs => asset!("assets/emoji/emoji_u1f430.svg"),
-                Suit::Diamonds => asset!("assets/emoji/emoji_u1f981.svg"),
-                Suit::Hearts => asset!("assets/emoji/emoji_u1f98a.svg"),
-                Suit::Spades => asset!("assets/emoji/emoji_u1f427.svg"),
-            };
             rsx! {
-                img {
-                    style: "height: 1.15em;",
-                    src: asset,
-                    draggable: false,
+                Emoji { 
+                    text: self.suits.suit_symbol(card.suit)
                 }
             }
         } else {

@@ -24,3 +24,6 @@ pub use new_game::*;
 
 mod local_storage;
 pub use local_storage::LocalStorage;
+
+mod emoji;
+pub use emoji::*;
