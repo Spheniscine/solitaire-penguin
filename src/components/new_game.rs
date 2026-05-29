@@ -41,7 +41,7 @@ pub fn NewGame(game_state: Signal<GameState>) -> Element {
 
             Choice {
                 name: "Tuxedo",
-                description: "Recommended for beginners. All cards start in the tableau.",
+                description: "Recommended for beginners. All cards start in the tableau, and rank order doesn’t change.",
                 onclick: move |_| game_state.write().new_game_with_variant(GameVariant::Tuxedo),
             }
 

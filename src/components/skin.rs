@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{components::{Emoji, SkinTrait}, game::{Card, Skin, Suit, SuitSkin}};
+use crate::{components::{Emoji, SkinTrait}, game::{Card, Skin, SuitSkin}};
 
 
 impl SkinTrait<Card> for Skin {
