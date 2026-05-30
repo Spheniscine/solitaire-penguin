@@ -144,6 +144,10 @@ button {
     src: local('Apple Color Emoji'), local('AppleColorEmoji'), local('apple-color-emoji');
 }
 
+.help p {
+    margin-top: 1em;
+}
+
 /* @font-face {
     font-family: "Noto Color Emoji";
     font-style: normal;

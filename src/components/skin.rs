@@ -2,6 +2,7 @@ use dioxus::prelude::*;
 
 use crate::{components::{Emoji, SkinTrait}, game::{Card, ColorMode, Skin, SuitSkin}};
 
+pub const KATEX_MAIN: &str = "KaTeX_Main";
 
 impl SkinTrait<Card> for Skin {
     fn get_color(&self, card: &Card, mode: ColorMode) -> String {
@@ -11,7 +12,7 @@ impl SkinTrait<Card> for Skin {
     fn render_rank(&self, card: &Card) -> Element {
         rsx! {
             span {
-                font_family: "KaTeX_Main",
+                font_family: KATEX_MAIN,
                 {self.ranks.rank_text(card.rank)}
             }
         }
