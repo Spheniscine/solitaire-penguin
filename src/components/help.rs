@@ -1,8 +1,6 @@
 use dioxus::prelude::*;
-use glam::Vec2;
-use strum_macros::{EnumCount, EnumIter, FromRepr};
 
-use crate::{KATEX_SUITS, components::{BoardComponent, CardText, TUTORIAL_BEAK, TUTORIAL_DECK, rem, skin::KATEX_MAIN}, game::{Board, Card, ColorMode, GameState, GameVariant, RANK_MAX, RANK_MIN, RankSkin, Skin, Suit}};
+use crate::{components::{CardText, rem, skin::KATEX_MAIN}, game::{Card, ColorMode, GameState, GameVariant, RANK_MAX, RANK_MIN, RankSkin, ScreenState, Skin, Suit}};
 
 #[component]
 fn Emph(children: Element) -> Element {
@@ -158,6 +156,7 @@ pub fn Help(game_state: Signal<GameState>) -> Element {
                         width: rem(30.),
                         position: "relative",
                         class: "game-button",
+                        onclick: move |_| game_state.write().screen_state = ScreenState::Game,
                         "Back to game"
                     }
                 }

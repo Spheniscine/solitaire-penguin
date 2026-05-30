@@ -157,7 +157,7 @@ pub struct ActionRecord {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ScreenState {
-    Game, Settings, NewGame,
+    Game, Settings, NewGame, Help,
 }
 
 #[derive(Copy, Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default, strum_macros::Display)]
