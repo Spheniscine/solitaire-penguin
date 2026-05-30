@@ -10,7 +10,7 @@ impl SkinTrait<Card> for Skin {
 
     fn render_rank(&self, card: &Card) -> Element {
         rsx! {
-            div {
+            span {
                 font_family: "KaTeX_Main",
                 {self.ranks.rank_text(card.rank)}
             }

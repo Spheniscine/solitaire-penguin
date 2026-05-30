@@ -96,3 +96,18 @@ pub fn CardFrame(
         }
     }
 }
+
+#[component]
+pub fn CardText<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(card: C, skin: S, color_mode: ColorMode) -> Element {
+    rsx! {
+        span {
+            font_size: "1.2em",
+            white_space: "nowrap",
+            color: skin.get_color(&card, color_mode),
+            {skin.render_rank(&card)},
+            span {display: "inline-block", min_width: "0.1em"},
+            {skin.render_suit(&card)},
+        }
+        
+    }
+}
