@@ -157,7 +157,7 @@ pub struct ActionRecord {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ScreenState {
-    Game, Settings, NewGame,
+    Game, Settings, NewGame, Help,
 }
 
 #[derive(Copy, Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default, strum_macros::Display)]
@@ -198,17 +198,18 @@ impl GameState {
         }
 
         deck.shuffle(rng);
+
         if !random_beak {
-            let beak = Card { rank: 1, suit: Suit::Spades };
-            let i = deck.iter().position(|&card| card == beak).expect("1S not found in deck, should be full deck");
+            // no longer an option; repurposed for help function
+            let beak = Card { rank: 3, suit: Suit::Diamonds };
+            let i = deck.iter().position(|&card| card == beak).expect("3D not found in deck, should be full deck");
             deck.swap(0, i);
         }
 
         deck
     }
     pub fn init() -> Self {
-        let random_beak = true;
-        let deal = Self::new_deal(&mut rand::rng(), random_beak);
+        let deal = Self::new_deal(&mut rand::rng(), true);
         let variant = GameVariant::Tuxedo;
 
         let skin = Skin { 
