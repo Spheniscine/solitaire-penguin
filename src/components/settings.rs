@@ -64,7 +64,7 @@ pub fn Settings(game_state: Signal<GameState>) -> Element {
             onkeydown: onkeydown,
 
             p {
-                "Allow undo/restart: "
+                "Allow undo/reset: "
                 input {
                     r#type: "checkbox",
                     checked: state.read().allow_undo,
