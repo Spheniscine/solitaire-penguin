@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 use glam::Vec2;
+use strum_macros::{EnumCount, EnumIter, FromRepr};
 
 use crate::{components::{BoardComponent, CardText, TUTORIAL_BEAK, TUTORIAL_DECK, rem}, game::{Board, Card, ColorMode, GameState, GameVariant}};
 
@@ -13,12 +14,28 @@ fn Emph(children: Element) -> Element {
     }
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, EnumCount, EnumIter, Default, FromRepr)]
+pub enum HelpPages {
+    #[default]
+    Layout,
+    Stacking,
+    // EmptyColumn,
+    // Flipper,
+    // Foundations,
+    // Victory,
+}
+
 #[component]
 pub fn Help(game_state: Signal<GameState>) -> Element {
     let st = game_state.read();
+
     let variant = GameVariant::Original; //st.variant;
     // let skin = st.skin;
-    let mut skin = st.skin; skin.suits = crate::game::SuitSkin::Traditional; skin.colors = crate::game::ColorSkin::TwoColor;
+    let mut skin = st.skin; 
+    skin.suits = crate::game::SuitSkin::Traditional; 
+    skin.colors = crate::game::ColorSkin::TwoColor;
+    skin.ranks = crate::game::RankSkin::Traditional;
+    
     let board = Board::from_deal(TUTORIAL_DECK, variant);
 
     rsx! {
