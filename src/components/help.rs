@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::{components::{BoardComponent, CardText, TUTORIAL_BEAK, TUTORIAL_DECK, rem}, game::{Board, ColorMode, GameState, GameVariant}};
+use crate::{components::{BoardComponent, CardText, TUTORIAL_BEAK, TUTORIAL_DECK, rem}, game::{Board, Card, ColorMode, GameState, GameVariant}};
 
 #[component]
 fn Emph(children: Element) -> Element {
@@ -18,7 +18,7 @@ pub fn Help(game_state: Signal<GameState>) -> Element {
     let st = game_state.read();
     let variant = GameVariant::Original; //st.variant;
     // let skin = st.skin;
-    let mut skin = st.skin; skin.suits = crate::game::SuitSkin::Shapes;
+    let mut skin = st.skin; skin.suits = crate::game::SuitSkin::Traditional; skin.colors = crate::game::ColorSkin::TwoColor;
     let board = Board::from_deal(TUTORIAL_DECK, variant);
 
     rsx! {
@@ -64,7 +64,10 @@ pub fn Help(game_state: Signal<GameState>) -> Element {
                     p {
                         margin_top: "1em",
                         "A standard 52-card deck is shuffled and dealt. The first card dealt to the back of the first column is called the ",Emph{"beak"},". (",
-                        CardText { card: TUTORIAL_BEAK, skin, color_mode: ColorMode::Light },
+                        CardText { 
+                            card: TUTORIAL_BEAK, 
+                            skin, color_mode: ColorMode::Light 
+                        },
                         " in this tutorial)"
                     }
                     p {

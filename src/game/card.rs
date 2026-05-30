@@ -69,10 +69,10 @@ pub const NUM_RANKS: usize = (RANK_MAX - RANK_MIN) as usize + 1;
 pub const DECK_SIZE: usize = NUM_RANKS * NUM_SUITS;
 
 impl Card {
-    fn code(self) -> String {
+    pub fn code(self) -> String {
         format!("{}{}", self.rank, self.suit.code())
     }
-    fn from_code(code: &str) -> Option<Self> {
+    pub fn from_code(code: &str) -> Option<Self> {
         let mut it = code.chars();
         let suit = Suit::from_code(it.next_back()?)?;
         let rank: u8 = it.as_str().parse().ok()?;

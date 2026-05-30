@@ -78,8 +78,8 @@ impl SuitSkin {
 
 const COLOR_AMBER: [&str; 2] = ["#b70", "#ffb433"];
 const COLOR_GREEN: [&str; 2] = ["#062", "#00ff55"];
-const COLOR_RED: [&str; 2] = ["#f00", "#ff6666"];
-const COLOR_BLUE: [&str; 2] = ["#00d", "#9999ff"];
+const COLOR_RED: [&str; 2] = ["#f00", "#ff8888"];
+const COLOR_BLUE: [&str; 2] = ["#00d", "#aaaaff"];
 const COLOR_BLACK: [&str; 2] = ["#000", "#fff"];
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Debug, EnumIter, strum_macros::Display, Default, FromRepr)]

@@ -29,7 +29,7 @@ impl SkinTrait<Card> for Skin {
                 span {
                     font_family: self.suits.font(),
                     position: if self.suits == SuitSkin::Shapes {"relative"},
-                    top: if self.suits == SuitSkin::Shapes {"0.12em"},
+                    top: if self.suits == SuitSkin::Shapes {"0.11em"},
                     {self.suits.suit_symbol(card.suit)}
                 }
             }
