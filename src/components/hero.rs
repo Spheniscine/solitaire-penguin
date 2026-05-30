@@ -86,7 +86,7 @@ pub fn Hero() -> Element {
                         right: rem(30.),
                         class: if st.undo_possible() {"game-button"} else {"game-button-disabled"},
                         onclick: move |_| if clean {state.write().restart()},
-                        "Restart"
+                        "Reset"
                     }
 
                     div {
