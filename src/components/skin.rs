@@ -1,11 +1,11 @@
 use dioxus::prelude::*;
 
-use crate::{components::{Emoji, SkinTrait}, game::{Card, Skin, SuitSkin}};
+use crate::{components::{Emoji, SkinTrait}, game::{Card, ColorMode, Skin, SuitSkin}};
 
 
 impl SkinTrait<Card> for Skin {
-    fn get_color(&self, card: &Card) -> String {
-        self.colors.color(card.suit).to_string()
+    fn get_color(&self, card: &Card, mode: ColorMode) -> String {
+        self.colors.color(card.suit, mode).to_string()
     }
 
     fn render_rank(&self, card: &Card) -> Element {

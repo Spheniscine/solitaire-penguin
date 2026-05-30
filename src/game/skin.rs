@@ -76,11 +76,17 @@ impl SuitSkin {
     }
 }
 
-const COLOR_AMBER: &str = "#b70";
-const COLOR_GREEN: &str = "#062";
-const COLOR_RED: &str = "#f00";
-const COLOR_BLUE: &str = "#00d";
-const COLOR_BLACK: &str = "#000";
+const COLOR_AMBER: [&str; 2] = ["#b70", "#ffb433"];
+const COLOR_GREEN: [&str; 2] = ["#062", "#00ff55"];
+const COLOR_RED: [&str; 2] = ["#f00", "#ff6666"];
+const COLOR_BLUE: [&str; 2] = ["#00d", "#9999ff"];
+const COLOR_BLACK: [&str; 2] = ["#000", "#fff"];
+
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Debug, EnumIter, strum_macros::Display, Default, FromRepr)]
+#[repr(u8)]
+pub enum ColorMode {
+    #[default] Dark, Light
+}
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Debug, EnumIter, strum_macros::Display, Default, FromRepr)]
 #[repr(u8)]
@@ -93,8 +99,8 @@ pub enum ColorSkin {
 }
 
 impl ColorSkin {
-    pub fn color(self, suit: Suit) -> &'static str {
-        match self {
+    pub fn color(self, suit: Suit, mode: ColorMode) -> &'static str {
+        let res = match self {
             ColorSkin::FourColor => {
                 // Use Spectrum Bridge colors - better distinction between reddish/warm and blackish/cool colors for
                 // solitaires that care about that
@@ -111,7 +117,8 @@ impl ColorSkin {
                     Suit::Diamonds | Suit::Hearts => COLOR_RED,
                 }
             },
-        }
+        };
+        res[mode as usize]
     }
 }
 

@@ -1,10 +1,10 @@
 use dioxus::prelude::*;
 use glam::Vec2;
 
-use crate::components::rem;
+use crate::{components::rem, game::ColorMode};
 
 pub trait SkinTrait<C>: PartialEq + Clone {
-    fn get_color(&self, card: &C) -> String;
+    fn get_color(&self, card: &C, mode: ColorMode) -> String;
     fn render_rank(&self, card: &C) -> Element;
     fn render_suit(&self, card: &C) -> Element;
 }
@@ -45,7 +45,7 @@ pub fn CardComponent<C: PartialEq + Clone + 'static, S: SkinTrait<C> + 'static>(
             font_size: pt(5.),
             text_align: "center",
             padding: pt(0.5),
-            color: skin.get_color(&card),
+            color: skin.get_color(&card, ColorMode::Dark),
 
             onclick, ondoubleclick,
 
