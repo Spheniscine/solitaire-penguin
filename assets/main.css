@@ -136,14 +136,6 @@ button {
     width: 24rem;
 }
 
-/* attempt fix for some Apple devices not loading the Noto emoji font? */
-@font-face {
-    font-family: "Apple Color Emoji";
-    font-style: normal;
-    font-weight: normal;
-    src: local('Apple Color Emoji'), local('AppleColorEmoji'), local('apple-color-emoji');
-}
-
 .help p {
     margin-top: 1em;
 }
