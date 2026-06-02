@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{components::{CardText, rem, skin::KATEX_MAIN}, game::{Card, ColorMode, GameState, GameVariant, RANK_MAX, RANK_MIN, RankSkin, ScreenState, Skin, Suit}};
+use crate::{components::{CardText, VIDEO_ORIGINAL, VIDEO_TUXEDO, rem, skin::KATEX_MAIN}, game::{Card, ColorMode, GameState, GameVariant, RANK_MAX, RANK_MIN, RankSkin, ScreenState, Skin, Suit}};
 
 #[component]
 fn Emph(children: Element) -> Element {
@@ -152,6 +152,20 @@ pub fn Help(game_state: Signal<GameState>) -> Element {
                     width: "92rem",
                     display: "flex",
                     justify_content: "center",
+
+                    a {
+                        href: if variant == GameVariant::Tuxedo { VIDEO_TUXEDO } else { VIDEO_ORIGINAL },
+                        target: "_blank",
+                        text_decoration: "none",
+                        margin_right: rem(4.),
+                        div {
+                            width: rem(30.),
+                            position: "relative",
+                            class: "game-button",
+                            "Example video"
+                        }
+                    }
+
                     div {
                         width: rem(30.),
                         position: "relative",
