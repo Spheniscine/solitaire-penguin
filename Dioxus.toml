@@ -3,6 +3,9 @@
 # `build` & `serve` dist path
 platform = "web"
 
+[web]
+pre_compress = false
+
 [web.app]
 base_path = "solitaire-penguin"
 
