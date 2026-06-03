@@ -76,7 +76,7 @@ pub fn rank_under_with_variant(rank: u8, variant: GameVariant) -> u8 {
 impl Board {
     pub fn empty() -> Self {
         Self {
-            depots: vec![],
+            depots: vec![vec![]; NUM_DEPOTS],
             beak: Card { rank: 1, suit: Suit::Spades },
             selected: None,
             animation_acts: vec![],
