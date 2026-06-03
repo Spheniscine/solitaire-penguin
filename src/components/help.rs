@@ -139,11 +139,11 @@ pub fn Help(game_state: Signal<GameState>) -> Element {
                 }
 
                 p {
-                    "You win the game when all cards have been moved to the foundations."
+                    "You ",Emph{"win the game"}," when all cards have been moved to the foundations."
                 }
 
                 p {
-                    "Shortcut note: Double-clicking on a card will automatically try to move it to a valid position, in the priority order of: foundations, tableau, flipper."
+                    Emph{"Shortcut note:"}," Double-clicking on a card will automatically try to move it to a valid position, in the priority order of: foundations, tableau, flipper."
                 }
 
                 div {
