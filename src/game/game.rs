@@ -209,7 +209,6 @@ impl GameState {
         deck
     }
     pub fn init() -> Self {
-        let deal = Self::new_deal(&mut rand::rng(), true);
         let variant = GameVariant::Tuxedo;
 
         let skin = Skin { 
@@ -220,7 +219,7 @@ impl GameState {
 
         let res = Self {
             board: Board::empty(),
-            deal,
+            deal: vec![],
             animation_key: 0,
             history: vec![],
             num_wins: 0,
