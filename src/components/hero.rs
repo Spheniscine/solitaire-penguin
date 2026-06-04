@@ -55,7 +55,7 @@ pub fn Hero() -> Element {
                 div {
                     position: "absolute",
                     padding: rem(1.),
-                    top: rem(10.),
+                    top: rem(9.5),
                     left: rem(2.),
                     font_size: rem(4.),
                     width: rem(48.),
