@@ -245,7 +245,7 @@ impl GameState {
         back.suit == front.suit && back.rank == rank_under_with_variant(front.rank, self.variant)
     }
 
-    pub fn can_select(&mut self, pos: BoardPos) -> bool {
+    pub fn can_select(&self, pos: BoardPos) -> bool {
         let depot = pos.depot_index;
         let ord = pos.card_index;
 
@@ -263,7 +263,7 @@ impl GameState {
         }
     }
 
-    pub fn can_move(&mut self, pos1: BoardPos, pos2: BoardPos) -> bool {
+    pub fn can_move(&self, pos1: BoardPos, pos2: BoardPos) -> bool {
         //let max_tableau_test: usize = 18;
 
         if pos1.depot_index == pos2.depot_index { return false; }
