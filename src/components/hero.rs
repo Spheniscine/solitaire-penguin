@@ -45,7 +45,7 @@ pub fn Hero() -> Element {
             if st.screen_state == ScreenState::Game {
                 div {
                     position: "absolute",
-                    top: rem(2.),
+                    top: rem(1.5),
                     left: rem(2.),
                     class: "game-button",
                     onclick: move |_| if clean {state.write().new_game()},
@@ -68,7 +68,7 @@ pub fn Hero() -> Element {
 
                 div {
                     position: "absolute",
-                    top: rem(2.),
+                    top: rem(1.5),
                     right: rem(2.),
                     class: "game-button",
                     onclick: move |_| if clean {state.write().screen_state = ScreenState::Settings;},
@@ -77,7 +77,7 @@ pub fn Hero() -> Element {
 
                 div {
                     position: "absolute",
-                    top: rem(2.),
+                    top: rem(1.5),
                     right: rem(30.),
                     class: if st.undo_possible() {"game-button"} else {"game-button-disabled"},
                     onclick: move |_| if clean {state.write().restart()},
