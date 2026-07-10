@@ -141,6 +141,10 @@ button {
     margin-top: 1em;
 }
 
+.help ul, .help ol {
+    padding-left: 2em;
+}
+
 /* @font-face {
     font-family: "Noto Color Emoji";
     font-style: normal;
