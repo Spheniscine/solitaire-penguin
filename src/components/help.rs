@@ -101,7 +101,7 @@ pub fn Help(game_state: Signal<GameState>) -> Element {
                 }
                 
                 p {
-                    "Cards in the ", Emph {"tableau"}, " are stacked by descending ranks of the same suit. Such stacks of any size can be moved as a unit."
+                    "Cards in the ", Emph {"tableau"}, " are stacked by decrementing ranks of the same suit. Such stacks of any size can be moved as a unit."
                     if variant == GameVariant::Tuxedo {
                         " (e.g. ",{stack_example()},")"
                     } else if variant == GameVariant::Original {
@@ -129,7 +129,7 @@ pub fn Help(game_state: Signal<GameState>) -> Element {
                 }
 
                 p {
-                    "The ", Emph {"foundations"}, " are built by suit in ascending order ",
+                    "The ", Emph {"foundations"}, " are built by suit in incrementing order ",
                     if variant == GameVariant::Tuxedo {
                         "from ",MinRank { skin }," to ",MaxRank { skin }
                     } else if variant == GameVariant::Original {
